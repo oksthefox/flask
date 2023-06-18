@@ -42,7 +42,7 @@ pipeline {
                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]
                 ]) {
-                    sh 'aws s3 cp MyFlask.tar.gz s3://oksana-sela/flaskproject'
+                    sh 'aws s3 cp MyFlask.tar.gz s3://oksana-sela/flaskproject/'
                 }
             }
         }
