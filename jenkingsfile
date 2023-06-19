@@ -44,16 +44,9 @@ pipeline
         {
             steps 
             {
-                withCredentials([
-                    [
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'aws_key',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]
-                ]) {
-                    sh 'aws s3 cp FlaskProject.tar.gz s3://oksana-sela/FlaskJenkins/'
-                }
+
+                sh 'aws s3 cp FlaskProject.tar.gz s3://oksana-sela/FlaskJenkins/'
+                
             }
         }
 
@@ -61,43 +54,26 @@ pipeline
         {
             steps 
             {
-                withCredentials([
-                    [
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'aws_key',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]
-                ]) 
+
+                
+                script 
                 {
-                    script 
-                    {
-                        def instanceId = sh(script: "aws ec2 describe-instances --region eu-north-1 --filters 'Name=tag:servernumber,Values=flask1' 'Name=instance-state-name,Values=running' | jq -r .Reservations[].Instances[].InstanceId", returnStdout: true).trim()
-                        def publicIp = sh(script: "aws ec2 describe-instances --region eu-north-1 --instance-ids ${instanceId} | jq -r .Reservations[].Instances[].PublicIpAddress", returnStdout: true).trim()
-                        env.instanceId = instanceId
-                        env.publicIp = publicIp
-                    }
+                    def instanceId = sh(script: "aws ec2 describe-instances --region eu-north-1 --filters 'Name=tag:servernumber,Values=flask1' 'Name=instance-state-name,Values=running' | jq -r .Reservations[].Instances[].InstanceId", returnStdout: true).trim()
+                    def publicIp = sh(script: "aws ec2 describe-instances --region eu-north-1 --instance-ids ${instanceId} | jq -r .Reservations[].Instances[].PublicIpAddress", returnStdout: true).trim()
+                    env.instanceId = instanceId
+                    env.publicIp = publicIp
                 }
+                
 
             }
         }
 
         stage('Pull gzip from S3 to EC2') {
-            steps {
-                withCredentials([
-                    [
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'aws_key',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]
-                ]) {
-                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'sudo yum install -y awscli'"
-                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'mkdir -p ~/.aws'"
-                    sh "scp -i /var/lib/jenkins/.ssh/oks.pem ~/.aws/credentials ec2-user@${env.publicIp}:~/.aws/"
-                    sh "scp -i /var/lib/jenkins/.ssh/oks.pem ~/.aws/config ec2-user@${env.publicIp}:~/.aws/"
+            steps 
+            {
+
                     sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'aws s3 cp s3://oksana-sela/FlaskJenkins/FlaskProject.tar.gz .'"
-                }
+                
             }
         }
 
@@ -106,7 +82,7 @@ pipeline
             steps 
             {
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script.sh ec2-user@${env.publicIp}:~/"
-                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'chmod +x script.sh; ./script.sh'"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'chmod +x script.sh;bash ~/script.sh'"
             }
         }
         
