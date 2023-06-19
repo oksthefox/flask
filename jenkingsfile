@@ -77,7 +77,7 @@ pipeline
             }
         }
 
-        stage('Run local script on EC2') 
+        stage('Run local script on EC2 -> unzippes and run the flask LIVE port 50000') 
         {
             steps 
             {
