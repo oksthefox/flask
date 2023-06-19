@@ -4,8 +4,6 @@ import random
 
 app = Flask(__name__)
 
-
-bugubg
 # list of cat images
 images = [
     "https://media.giphy.com/media/yr7n0u3qzO9nG/giphy.gif",
