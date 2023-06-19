@@ -56,7 +56,7 @@ pipeline {
                 ]) {
                     sh 'aws s3 cp s3://oksana-sela/flaskproject/MyFlask.tar.gz .'
                     sh 'tar -xzvf MyFlask.tar.gz'
-                    sh 'aws s3 cp extracted_folder/ s3://oksana-sela/flaskproject/ --recursive'
+                    sh 'aws s3 cp flask/ s3://oksana-sela/flaskproject/ --recursive'
                     sh 'ssh -i /home/oksana/Desktop/AnsibleProject/privatekeys/key.pem ec2-user@13.48.1.52 << EOF\n' +
                        'cd /home/ec2-user/JenkinsProject\n' +
                        'source venv/bin/activate\n' +
