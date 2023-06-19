@@ -82,7 +82,7 @@ pipeline
             steps 
             {
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script.sh ec2-user@${env.publicIp}:~/"
-                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'chmod +x script.sh;bash ~/script.sh'"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script.sh'"
             }
         }
 
