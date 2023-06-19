@@ -43,6 +43,48 @@ pipeline {
                     ]
                 ]) {
                     sh 'aws s3 cp MyFlask.tar.gz s3://oksana-sela/flaskproject/'
+            }
+        }
+
+        
+        stage("Test") {
+            steps {
+                withCredentials([
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws_key',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) {
+                    // Copy the tar file from S3 to the EC2 instance
+                    sh 'aws s3 cp s3://oksana-sela/flaskproject/MyFlask.tar.gz .'
+        
+                    // Extract the contents of the tar file
+                    sh 'tar -xzvf MyFlask.tar.gz'
+        
+                    // Upload the extracted files to the EC2 instance
+                    sh 'aws s3 cp extracted_folder/ s3://oksana-sela/flaskproject/ --recursive'
+        
+                    // SSH into the EC2 instance
+                    sh 'ssh -i /home/oksana/Desktop/AnsibleProject/privatekeys/key.pem ec2-user@13.48.1.52'
+        
+                    // Navigate to the project directory
+                    sh 'cd /path/to/project'
+        
+                    // Activate the virtual environment if necessary
+                    sh 'source venv/bin/activate'
+        
+                    // Install project dependencies if needed
+                    sh 'pip install -r requirements.txt'
+        
+                    // Start the Flask app
+                    sh 'python app.py &'
+                }
+            }
+        }
+            }
+        }
                 }
             }
         }
