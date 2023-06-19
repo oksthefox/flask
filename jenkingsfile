@@ -1,38 +1,88 @@
-pipeline {
+pipeline 
+{
     agent any
-    triggers {
-        pollSCM('*/5 * * * *')
+    
+    triggers 
+    {
+        pollSCM('*/1 * * * *')
     }
-
-    stages {
-        stage('Cleanup') {
-            steps {
-                // Perform the cleanup step here
-                sh 'echo "Performing cleanup..."'
+    
+    stages 
+    {
+        
+        stage('Cleanup') 
+        {
+            steps 
+            {
+                echo 'Performing cleanup...'
                 sh 'rm -rf *'
             }
         }
-
-        stage('Clone') {
-            steps {
-                // Perform the clone step here
-                sh 'echo "Cloning..."'
+        
+        stage('Clone') 
+        {
+            steps 
+            {
+                echo 'Cloning repository...'
                 sh 'git clone https://github.com/oksthefox/flask.git'
                 sh 'ls'
             }
         }
-
-        stage('Build') {
-            steps {
-                // Perform the build step here
-                sh 'echo "Building..."'
-                sh 'echo "Packaging..."'
-                sh 'tar -czvf MyFlask.tar.gz flask'
+        
+        stage('Build') 
+        {
+            steps 
+            {
+                echo 'Building...'
+                echo 'Packaging...'
+                sh 'tar -czvf FlaskProject.tar.gz flask'
                 sh 'ls'
             }
         }
+        
+        stage('Upload to S3') 
+        {
+            steps 
+            {
+                withCredentials([
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws_key',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) {
+                    sh 'aws s3 cp FlaskProject.tar.gz s3://oksana-sela/FlaskJenkins/'
+                }
+            }
+        }
 
-        stage("Upload to S3") {
+        stage('Get EC2 Instance Details') 
+        {
+            steps 
+            {
+                withCredentials([
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws_key',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) 
+                {
+                    script 
+                    {
+                        def instanceId = sh(script: "aws ec2 describe-instances --region eu-north-1 --filters 'Name=tag:servernumber,Values=flask1' 'Name=instance-state-name,Values=running' | jq -r .Reservations[].Instances[].InstanceId", returnStdout: true).trim()
+                        def publicIp = sh(script: "aws ec2 describe-instances --region eu-north-1 --instance-ids ${instanceId} | jq -r .Reservations[].Instances[].PublicIpAddress", returnStdout: true).trim()
+                        env.instanceId = instanceId
+                        env.publicIp = publicIp
+                    }
+                }
+
+            }
+        }
+
+        stage('Pull gzip from S3 to EC2') {
             steps {
                 withCredentials([
                     [
@@ -42,41 +92,23 @@ pipeline {
                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]
                 ]) {
-                    sh 'aws s3 cp MyFlask.tar.gz s3://oksana-sela/flaskproject/'
+                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'sudo yum install -y awscli'"
+                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'mkdir -p ~/.aws'"
+                    sh "scp -i /var/lib/jenkins/.ssh/oks.pem ~/.aws/credentials ec2-user@${env.publicIp}:~/.aws/"
+                    sh "scp -i /var/lib/jenkins/.ssh/oks.pem ~/.aws/config ec2-user@${env.publicIp}:~/.aws/"
+                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'aws s3 cp s3://oksana-sela/FlaskJenkins/FlaskProject.tar.gz .'"
                 }
             }
         }
 
-        stage("Test") {
-            steps {
-                withCredentials([
-                    [
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'aws_key',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]
-                ]) {
-                    // Copy the tar file from S3 to the current directory
-                    sh 'aws s3 cp s3://oksana-sela/flaskproject/MyFlask.tar.gz .'
-
-                    // Extract the contents of the tar file
-                    sh 'tar -xzvf MyFlask.tar.gz'
-
-                    // Upload the extracted files to S3
-                    sh 'aws s3 cp flask/ s3://oksana-sela/flaskproject/ --recursive'
-
-                    // SSH into the EC2 instance
-                    // You'll need to replace the `EC2_INSTANCE_IP` with the actual IP address of your EC2 instance
-                    sh 'ssh -i /path/to/your/oks.pem ec2-user@13.48.1.52<< EOF
-                        cd /home/ec2-user/JenkinsProject
-                        source venv/bin/activate
-                        pip install -r requirements.txt
-                        python app.py &
-                        exit
-                    EOF'
-                }
+        stage('Run local script on EC2') 
+        {
+            steps 
+            {
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script.sh ec2-user@${env.publicIp}:~/"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'chmod +x script.sh ; ./script.sh'"
             }
         }
+        
     }
 }
