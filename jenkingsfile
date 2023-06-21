@@ -1,38 +1,28 @@
-pipeline 
-{
+pipeline {
     agent any
     
-    triggers 
-    {
+    triggers {
         pollSCM('*/1 * * * *')
     }
     
-    stages 
-    {
-        
-        stage('Cleanup') 
-        {
-            steps 
-            {
+    stages {
+        stage('Cleanup') {
+            steps {
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
             }
         }
         
-        stage('Clone') 
-        {
-            steps 
-            {
+        stage('Clone') {
+            steps {
                 echo 'Cloning repository...'
                 sh 'git clone https://github.com/oksthefox/flask.git'
                 sh 'ls'
             }
         }
         
-        stage('Build') 
-        {
-            steps 
-            {
+        stage('Build') {
+            steps {
                 echo 'Building...'
                 echo 'Packaging...'
                 sh 'tar -czvf FlaskProject.tar.gz flask'
@@ -40,80 +30,54 @@ pipeline
             }
         }
         
-        stage('Upload to S3') 
-        {
-            steps 
-            {
-
+        stage('Upload to S3') {
+            steps {
                 sh 'aws s3 cp FlaskProject.tar.gz s3://oksana-sela/FlaskJenkins/'
-                
             }
         }
 
-        stage('Get EC2 Instance Details') 
-        {
-            steps 
-            {
-
-                
-                script 
-                {
+        stage('Get EC2 Instance Details') {
+            steps {
+                script {
                     def instanceId = sh(script: "aws ec2 describe-instances --region eu-north-1 --filters 'Name=tag:servernumber,Values=flask1' 'Name=instance-state-name,Values=running' | jq -r .Reservations[].Instances[].InstanceId", returnStdout: true).trim()
                     def publicIp = sh(script: "aws ec2 describe-instances --region eu-north-1 --instance-ids ${instanceId} | jq -r .Reservations[].Instances[].PublicIpAddress", returnStdout: true).trim()
                     env.instanceId = instanceId
                     env.publicIp = publicIp
                 }
-                
-
             }
         }
 
         stage('Pull gzip from S3 to EC2') {
-            steps 
-            {
-
-                    sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'aws s3 cp s3://oksana-sela/FlaskJenkins/FlaskProject.tar.gz .'"
-                
+            steps {
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'aws s3 cp s3://oksana-sela/FlaskJenkins/FlaskProject.tar.gz .'"
             }
         }
 
-        stage('Run local script on EC2 -> unzippes and run the flask LIVE port 5000') 
-        {
-            steps 
-            {
+        stage('Run local script on EC2 -> unzips and runs the Flask LIVE server on port 5000') {
+            steps {
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script.sh ec2-user@${env.publicIp}:~/"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script.sh'"
             }
         }
 
-        stage('test') 
-        {
-            steps 
-            {
-
+        stage('Test') {
+            steps {
                 sh 'curl http://16.170.157.213:5000'
-                
             }
         }
-        stage('closing test server') 
-        {
-            steps 
-            {
-
+        
+        stage('Closing test server') {
+            steps {
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script2.sh ec2-user@${env.publicIp}:~/"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script2.sh'"
-                
             }
         }
-        stage('run flask on the server after testing ') 
-        {
-            steps 
-            {
-
-                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script3.sh ec2-user@${env.publicIp}:~/"
-                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script3.sh'"
-                
+        
+        stage('Run Flask on the server after testing') {
+            steps {
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script3.sh ec2-user@${env.publicIp}:~/"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script3.sh'"
             }
-
+        }
     }
 }
