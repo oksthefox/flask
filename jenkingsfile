@@ -67,7 +67,7 @@ pipeline
 
         stage('Test') {
             steps {
-                sh 'curl http://16.170.157.213:5000'
+                sh "curl http://${env.publicIp}:5000"
             }
         }
         
