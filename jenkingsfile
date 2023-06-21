@@ -1,13 +1,18 @@
-pipeline {
+pipeline 
+{
     agent any
     
-    triggers {
+    triggers 
+    {
         pollSCM('*/1 * * * *')
     }
     
-    stages {
-        stage('Cleanup') {
-            steps {
+    stages 
+    {
+        stage('Cleanup') 
+        {
+            steps 
+            {
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
             }
@@ -67,7 +72,8 @@ pipeline {
         }
         
         stage('Closing test server') {
-            steps {
+            steps 
+            {
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script2.sh ec2-user@${env.publicIp}:~/"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script2.sh'"
             }
@@ -75,8 +81,8 @@ pipeline {
         
         stage('Run Flask on the server after testing') {
             steps {
-                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script3.sh ec2-user@${env.publicIp}:~/"
-                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script3.sh'"
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem /var/lib/jenkins/scripts/script.sh ec2-user@${env.publicIp}:~/"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicIp} 'bash -xe ~/script.sh'"
             }
         }
     }
