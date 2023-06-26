@@ -138,7 +138,7 @@ pipeline
         stage('Deployment') {
             steps 
             {
-                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker pull oksthefox/dockerflask .'"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker pull oksthefox/dockerflask'"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker container run -d -p 5000:5000 oksthefox/dockerflask'"
             }
         }
