@@ -30,12 +30,16 @@ pipeline
             }
         }
         
-        stage('Build-create docker image and push') 
+        stage('Build-create docker image and push + install docker') 
         {
             steps 
             {
                 //stage building
                 echo 'Building...'
+                echo 'installing docker...'
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'sudo yum update -y'"
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'sudo amazon-linux-extras install docker -y'"
+                echo ' pull docker'
                 sh 'docker image build -t oksthefox/dockerflask ./flask/flask-app'
                 echo 'pushing to dockerhub'
                 sh 'docker push oksthefox/dockerflask'
