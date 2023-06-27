@@ -44,7 +44,7 @@ pipeline
         }
         
 
-        stage('Get Test+Prod Instance Details')
+        stage('Get Test+Prod Instance Details + install docker')
         {
             steps 
             {
@@ -70,7 +70,7 @@ pipeline
                     env.publicTestIp = publicTestIp
 
 
-                    if(instanceProdId + install docker )
+                    if(instanceProdId)
                     {
                         //prod not running
                         sh (script: "aws ec2 start-instances --region eu-north-1 --instance-ids ${instanceProdId}")
