@@ -122,9 +122,9 @@ pipeline
             steps
             {
                 echo "transferring docker-compose to test"
-                sh "scp ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicTestIp}:."
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicTestIp}:."
                 echo "transferring docker-compose to prod"
-                sh "scp ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicProdIp}:."
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicProdIp}:."
             }
         }
 
