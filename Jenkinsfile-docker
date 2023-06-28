@@ -160,7 +160,6 @@ pipeline
                 {
                     sh(script:"ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker container prune --force'")
                     def containerId = sh(script: "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker ps -aqf \"name=flask-container\"'", returnStdout: true).trim()
-                    def containerIdSecondWay sh(script:"ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker ps | grep flask-container | aws {'print $1'}'", returnStdout: true).trim()
                     
                     // Check if container is already running on the production server
                     if (containerId) 

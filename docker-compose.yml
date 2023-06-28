@@ -1,1 +1,10 @@
-.
+version: "3"
+
+services:
+  web:
+    build: ./flask-app/
+    image: oksthefox/dockerflask
+    ports:
+      - "5000:5000"
+
+
