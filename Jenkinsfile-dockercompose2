@@ -98,8 +98,12 @@ pipeline
         {
             steps
             {
-                echo "installing all needed"
-                sh "ansible-playbook -i /var/lib/jenkins/ansible-docker-jenkins/aws_ec2.yml /var/lib/jenkins/ansible-docker-jenkins/installallcomponents.yml"
+                dir('/var/lib/jenkins/ansible-docker-jenkins')
+                {
+                    echo "installing all needed"
+                    sh "ansible-playbook -i aws_ec2.yml installallcomponents.yml"
+                }
+                
             }
         }
 
