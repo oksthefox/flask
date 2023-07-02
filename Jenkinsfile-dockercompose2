@@ -37,8 +37,10 @@ pipeline
                 dir('./flask')
                 {
                     //stage building
-                    echo 'Building docker'
+                    echo 'Building Docker'
                     sh "docker-compose build --build-arg BUILD_NUMBER='1.${BUILD_NUMBER}'"
+                    echo 'Building Docker'
+                    sh "docker-compose build --build-arg BUILD_NUMBER='latest'"
                     echo 'pushing version To dockerhub'
                     sh "docker-compose push"
                 }
