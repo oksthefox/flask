@@ -34,14 +34,11 @@ pipeline
         {
             steps 
             {
-                dir('./flask')
-                {
-                    //stage building
+                dir('./flask') {
+                    // Stage building
                     echo 'Building Docker'
                     sh "docker-compose build --build-arg BUILD_NUMBER='1.${BUILD_NUMBER}'"
-                    echo 'Building Docker'
-                    sh "docker-compose build --build-arg BUILD_NUMBER='latest'"
-                    echo 'pushing version To dockerhub'
+                    echo 'Pushing version to Docker Hub'
                     sh "docker-compose push"
                 }
             }
