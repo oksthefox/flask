@@ -16,6 +16,8 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
+                sh 'docker rmi $(docker images "oksthefox/dockerflask:1.*" -q)'
+
             }
         }
         
@@ -27,7 +29,6 @@ pipeline
                 echo 'Cloning repository...'
                 sh 'git clone https://github.com/oksthefox/flask.git'
                 sh 'ls'
-                sh 'docker rmi oksthefox/flaskapp'
             }
         }
         
