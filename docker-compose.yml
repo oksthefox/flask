@@ -2,11 +2,16 @@ version: '3'
 
 services:
   web:
-    build: ./flask-app/
-    image:
-      repository: oksthefox/dockerflask
-      tags:
-        - latest
-        - ${BUILD_NUMBER}
+    build: .
+    image: oksthefox/dockerflask
     ports:
       - "5000:5000"
+    environment:
+      - BUILD_NUMBER=${BUILD_NUMBER}
+    # This will update the `latest` and `VERSION` tags to be the same
+    # when you run `docker-compose push`
+    deploy:
+      post_build:
+        - docker tag oksthefox/dockerflask:latest myrepo/myimage:${BUILD_NUMBER}
+        - docker push oksthefox/dockerflask:latest
+        - docker push oksthefox/dockerflask:${BUILD_NUMBER}
