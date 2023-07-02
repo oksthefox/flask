@@ -16,10 +16,7 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
-                sh "docker images --format '{{{{.Repository}}}}:{{{{.Tag}}}}' | grep 'oksthefox/dockerflask:1\\.[0-9]*' | xargs docker rmi"
-
-
-
+                sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep 'oksthefox/dockerflask:1\\.[0-9]*' | awk '{print $1\":\"$2}' | xargs docker rmi"
             }
         }
         
