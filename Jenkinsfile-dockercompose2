@@ -16,6 +16,7 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
+                sh "docker rmi oksthefox/dockerflask:1.*"
             }
         }
         
@@ -37,9 +38,10 @@ pipeline
                 dir('./flask') {
                     // Stage building
                     echo 'Building Docker'
-                    sh "docker-compose build --build-arg BUILD_NUMBER='1.${BUILD_NUMBER}'"
+                    sh "docker-compose build"
+                    sh "docker tag oksthefox/dockerflask:latest oksthefox/dockerflask:1.${BUILD_NUMBER}"
                     echo 'Pushing version to Docker Hub'
-                    sh "docker-compose push"
+                    sh "docker-compose push -a"
                 }
             }
         }
