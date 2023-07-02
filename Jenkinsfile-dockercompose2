@@ -17,7 +17,6 @@ pipeline
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
                 sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
-
             }
         }
         
@@ -40,10 +39,8 @@ pipeline
                 {
                     // Stage building
                     echo 'Building Docker'
-                    sh "docker-compose build"
-                    sh "docker tag oksthefox/dockerflask:latest oksthefox/dockerflask:1.${BUILD_NUMBER}"
-                    sh "docker push oksthefox/dockerflask:latest"
-                    sh "docker push oksthefox/dockerflask:1.${BUILD_NUMBER}"
+                    sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:${BUILD_NUMBER}"
+                    sh "docker push --all-tags oksthefox/dockerflask"
                 }
             }
         }
