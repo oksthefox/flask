@@ -16,8 +16,7 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
-                sh "docker images | grep -w 'oksthefox/dockerflask' | grep -E -w '1\\.[0-9]*' | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
-
+                //sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk {'print $2'} | xargs -I {} docker rmi oksthefox/dockerflask:{}"
             }
         }
         
@@ -36,13 +35,14 @@ pipeline
         {
             steps 
             {
-                dir('./flask') {
+                dir('./flask') 
+                {
                     // Stage building
                     echo 'Building Docker'
                     sh "docker-compose build"
                     sh "docker tag oksthefox/dockerflask:latest oksthefox/dockerflask:1.${BUILD_NUMBER}"
-                    echo 'Pushing version to Docker Hub'
-                    sh "docker-compose push -a"
+                    sh "docker push oksthefox/dockerflask:latest"
+                    sh "docker push oksthefox/dockerflask:1.${BUILD_NUMBER}"
                 }
             }
         }
