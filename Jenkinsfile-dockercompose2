@@ -15,7 +15,7 @@ pipeline
             {
                 script 
                 {
-                    def changes = checkout(scm).polling.getChanges()
+                    def changes = scm.changeset
                     def projectFileChanged = false
                     for (change in changes) 
                     {
@@ -25,16 +25,16 @@ pipeline
                             break
                         }
                     }
-                    if (!projectFileChanged) 
+                    if (!projectFileChanged && env.BRANCH_NAME == 'main') 
                     {
-                        echo 'No changes to project files detected. Skipping pipeline execution.'
+                        echo 'No changes to project files detected on the main branch. Skipping pipeline execution.'
                         currentBuild.result = 'SUCCESS'
                         return
                     }
                 }
-                
             }
         }
+
         stage('Cleanup') 
         {
             steps 
