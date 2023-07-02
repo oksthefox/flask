@@ -9,24 +9,32 @@ pipeline
     
     stages 
     {
-        stage
+        stage('Check for Changes') 
         {
             steps 
             {
                 script 
                 {
                     def changes = checkout(scm).polling.getChanges()
-                    if (changes.isEmpty()) 
+                    def projectFileChanged = false
+                    for (change in changes) 
                     {
-                        echo 'No changes detected. Skipping pipeline execution.'
+                        if (!change.path.startsWith('Jenkinsfile') && !change.path.endsWith('.groovy')) 
+                        {
+                            projectFileChanged = true
+                            break
+                        }
+                    }
+                    if (!projectFileChanged) 
+                    {
+                        echo 'No changes to project files detected. Skipping pipeline execution.'
                         currentBuild.result = 'SUCCESS'
                         return
                     }
                 }
+                
             }
         }
-
-        
         stage('Cleanup') 
         {
             steps 
