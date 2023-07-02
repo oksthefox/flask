@@ -16,7 +16,6 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
-                sh "docker rmi oksthefox/dockerflask:1.*"
             }
         }
         
