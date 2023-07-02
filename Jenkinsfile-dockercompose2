@@ -38,9 +38,9 @@ pipeline
                 {
                     //stage building
                     echo 'Building docker'
-                    sh 'docker-compose build --build-arg BUILD_NUMBER='1.${BUILD_NUMBER}''
+                    sh "docker-compose build --build-arg BUILD_NUMBER=1.${BUILD_NUMBER}"
                     echo 'pushing version To dockerhub'
-                    sh 'docker-compose push'
+                    sh "docker-compose push"
                 }
             }
         }
