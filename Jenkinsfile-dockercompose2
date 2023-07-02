@@ -9,6 +9,20 @@ pipeline
     
     stages 
     {
+        steps 
+        {
+            script 
+            {
+                def changes = checkout(scm).polling.getChanges()
+                if (changes.isEmpty()) 
+                {
+                    echo 'No changes detected. Skipping pipeline execution.'
+                    currentBuild.result = 'SUCCESS'
+                    return
+                }
+            }
+        }
+        
         stage('Cleanup') 
         {
             steps 
