@@ -35,11 +35,11 @@ pipeline
         {
             steps 
             {
-                dir('./flask') 
+                dir('./flask/flask-app/') 
                 {
                     // Stage building
                     echo 'Building Docker'
-                    sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:${BUILD_NUMBER}"
+                    sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:1.${BUILD_NUMBER} ."
                     sh "docker push --all-tags oksthefox/dockerflask"
                 }
             }
