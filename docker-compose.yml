@@ -6,10 +6,3 @@ services:
     image: oksthefox/dockerflask
     ports:
       - "5000:5000"
-    environment:
-      - BUILD_NUMBER=${BUILD_NUMBER}
-    deploy:
-      post_build:
-        - docker tag oksthefox/dockerflask:latest myrepo/myimage:${BUILD_NUMBER}
-        - docker push oksthefox/dockerflask:latest
-        - docker push oksthefox/dockerflask:${BUILD_NUMBER}

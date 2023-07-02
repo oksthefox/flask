@@ -14,3 +14,11 @@ EXPOSE 5000
 
 # run the command
 CMD ["python", "./app.py"]
+
+# Add tags to the image
+ARG BUILD_NUMBER
+ENV TAG1=${BUILD_NUMBER}
+ENV TAG2=latest
+
+# Tag the image with multiple tags
+RUN docker tag oksthefox/dockerflask:${TAG2} oksthefox/dockerflask:${TAG1}
