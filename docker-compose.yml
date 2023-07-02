@@ -3,6 +3,6 @@ version: '3'
 services:
   web:
     build: ./flask-app/
-    image: oksthefox/dockerflask:latest,oksthefox/dockerflask:${BUILD_NUMBER}
+    image: oksthefox/dockerflask:latest , oksthefox/dockerflask:${BUILD_NUMBER}
     ports:
       - "5000:5000"
