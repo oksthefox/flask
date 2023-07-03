@@ -2,6 +2,19 @@ version: '3'
 
 services:
   web:
-    image: oksthefox/dockerflask
+    build: .
     ports:
       - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:password@db/flask_db
+  db:
+    build: ./mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

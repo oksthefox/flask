@@ -1,7 +1,13 @@
+# Use an official Python runtime as a parent image
 FROM python:3.8
 
 # Set a directory for the app
 WORKDIR /usr/src/app
+
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev
 
 # Copy all the files to the container
 COPY . .
