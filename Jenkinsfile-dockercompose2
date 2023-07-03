@@ -14,7 +14,7 @@ pipeline
         stage('Check Jenkinsfile Changes') {
             steps {
                 script {
-                    def changeset = checkout(scm)
+                    def changeset = scm.pollingBaseline.getAffectedFiles()
                     def modifiedFiles = changeset.collect { it.path }
                     def jenkinsfilesChanged = modifiedFiles.any {
                         it == 'Jenkinsfile-docker' || it == 'Jenkinsfile-dockercompose2' || it == 'Jenkinsfile-dockercompose'
@@ -32,6 +32,7 @@ pipeline
                 }
             }
         }
+
 
 
         stage('Cleanup') 
