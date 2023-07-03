@@ -14,7 +14,7 @@ pipeline
                 script {
                     // Check if any files other than Jenkinsfile were modified
                     def changeSets = currentBuild.changeSets
-                    def modifiedFiles = changeSets.collectMany { it.items.collect { item -> item.path } }
+                    def modifiedFiles = changeSets.collectMany { it.affectedFiles.collect { file -> file.path } }
                     modifiedFiles.remove('Jenkinsfile') // Exclude Jenkinsfile from the check
                     
                     if (modifiedFiles.isEmpty()) {
@@ -23,6 +23,7 @@ pipeline
                 }
             }
         }
+
 
 
         stage('Cleanup') 
