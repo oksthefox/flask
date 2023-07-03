@@ -10,6 +10,29 @@ pipeline
     stages 
     {
 
+
+        stage('Check Jenkinsfile Changes') {
+            steps {
+                script {
+                    def changes = scm.changeset
+                    def modifiedFiles = changes.collect { it.path }
+                    def jenkinsfilesChanged = modifiedFiles.any {
+                        it == 'Jenkinsfile-docker' || it == 'Jenkinsfile-dockercompose2' || it == 'Jenkinsfile-dockercompose'
+                    }
+                    
+                    def projectFilesChanged = modifiedFiles.any {
+                        !it.startsWith('Jenkinsfile')
+                    }
+                    
+                    if (jenkinsfilesChanged && !projectFilesChanged) {
+                        echo 'Skipping the pipeline as only Jenkinsfile was modified.'
+                        currentBuild.result = 'SUCCESS'
+                        error('Skipping pipeline')
+                    }
+                }
+            }
+        }
+
         stage('Cleanup') 
         {
             steps 
