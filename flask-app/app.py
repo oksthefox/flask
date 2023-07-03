@@ -2,16 +2,23 @@ from flask import Flask, render_template
 import mysql.connector
 import os
 import random
+import time
 
 app = Flask(__name__)
 
 # Configure MySQL connection
-db = mysql.connector.connect(
-    host="db",
-    user="root",
-    password="password",
-    database="flask_db"
-)
+db = None
+while db is None:
+    try:
+        db = mysql.connector.connect(
+            host="db",
+            user="root",
+            password="password",
+            database="flask_db"
+        )
+    except mysql.connector.Error as err:
+        print("Failed connecting to database. Retrying...")
+        time.sleep(1)
 
 @app.route("/")
 def index():

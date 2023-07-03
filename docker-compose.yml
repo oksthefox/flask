@@ -2,17 +2,21 @@ version: '3'
 
 services:
   web:
-    build: .
+    build: ./flask-app
     ports:
       - "5000:5000"
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mysql+pymysql://root:password@db/flask_db
+      - MYSQL_PASSWORD=password
+      - MYSQL_USER=root
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=flask_db
+    restart: always
   db:
     build: ./mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      - MYSQL_ROOT_PASSWORD=password
     volumes:
       - db_data:/var/lib/mysql
 
