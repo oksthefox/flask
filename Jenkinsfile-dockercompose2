@@ -14,7 +14,7 @@ pipeline
                 script {
                     def changeset = currentBuild.changeSet
                     def projectFileChanged = false
-                    echo "looking for changeset"
+                    echo "Looking for changeset..."
                     if (changeset) {
                         for (change in changeset.items) {
                             if (!change.path.startsWith('Jenkinsfile') && !change.path.endsWith('.groovy')) {
@@ -23,16 +23,17 @@ pipeline
                             }
                         }
                     }
-                    echo "deciding to skip or not"
-                    if (!projectFileChanged && env.BRANCH_NAME == 'main') {
+                    echo "Deciding to skip or not..."
+                    if (projectFileChanged || env.BRANCH_NAME != 'main') {
+                        echo 'Changes detected in project files or not on the main branch. Proceeding with pipeline execution.'
+                    } else {
                         echo 'No changes to project files detected on the main branch. Skipping pipeline execution.'
-                        if (!projectFileChanged) {
-                            error('Skipping pipeline')
-                        }
+                        error('Skipping pipeline')
                     }
                 }
             }
         }
+
 
 
 
