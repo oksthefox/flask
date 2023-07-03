@@ -14,6 +14,8 @@ pipeline
         stage('Check Jenkinsfile Changes') {
             steps {
                 script {
+                    echo "Running 'Check Jenkinsfile Changes' stage"
+                    
                     def changeSets = currentBuild.changeSets
                     def modifiedFiles = []
                     
@@ -23,6 +25,8 @@ pipeline
                         }
                     }
                     
+                    echo "Modified files: ${modifiedFiles}"
+                    
                     def jenkinsfilesChanged = modifiedFiles.any {
                         it == 'Jenkinsfile-docker' || it == 'Jenkinsfile-dockercompose2' || it == 'Jenkinsfile-dockercompose'
                     }
@@ -30,6 +34,9 @@ pipeline
                     def projectFilesChanged = modifiedFiles.any {
                         !it.startsWith('Jenkinsfile')
                     }
+                    
+                    echo "Jenkinsfiles changed: ${jenkinsfilesChanged}"
+                    echo "Project files changed: ${projectFilesChanged}"
                     
                     if (jenkinsfilesChanged && !projectFilesChanged) {
                         echo 'Skipping the pipeline as only Jenkinsfile was modified.'
@@ -39,6 +46,7 @@ pipeline
                 }
             }
         }
+
 
 
 
