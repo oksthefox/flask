@@ -9,48 +9,6 @@ pipeline
     
     stages 
     {
-
-
-        stage('Check Jenkinsfile Changes') {
-            steps {
-                script {
-                    echo "Running 'Check Jenkinsfile Changes' stage"
-                    
-                    def changeSets = currentBuild.changeSets
-                    def modifiedFiles = []
-                    
-                    for (changeSet in changeSets) {
-                        for (change in changeSet) {
-                            modifiedFiles.add(change.path)
-                        }
-                    }
-                    
-                    echo "Modified files: ${modifiedFiles}"
-                    
-                    def jenkinsfilesChanged = modifiedFiles.any {
-                        it == 'Jenkinsfile-docker' || it == 'Jenkinsfile-dockercompose2' || it == 'Jenkinsfile-dockercompose'
-                    }
-                    
-                    def projectFilesChanged = modifiedFiles.any {
-                        !it.startsWith('Jenkinsfile')
-                    }
-                    
-                    echo "Jenkinsfiles changed: ${jenkinsfilesChanged}"
-                    echo "Project files changed: ${projectFilesChanged}"
-                    
-                    if (jenkinsfilesChanged && !projectFilesChanged) {
-                        echo 'Skipping the pipeline as only Jenkinsfile was modified.'
-                        currentBuild.result = 'SUCCESS'
-                        error('Skipping pipeline')
-                    }
-                }
-            }
-        }
-
-
-
-
-
         stage('Cleanup') 
         {
             steps 
