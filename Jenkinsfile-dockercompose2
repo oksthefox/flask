@@ -9,13 +9,12 @@ pipeline
     
     stages 
     {
-        stage('Changes Check') 
-        {
+        stage('Changes Check') {
             steps {
                 script {
                     // Check if any files other than Jenkinsfile were modified
-                    def changes = scm.changeset
-                    def modifiedFiles = changes.collect { it.path }
+                    def changeSets = currentBuild.changeSets
+                    def modifiedFiles = changeSets.collectMany { it.items.collect { item -> item.path } }
                     modifiedFiles.remove('Jenkinsfile') // Exclude Jenkinsfile from the check
                     
                     if (modifiedFiles.isEmpty()) {
@@ -24,6 +23,7 @@ pipeline
                 }
             }
         }
+
 
         stage('Cleanup') 
         {
