@@ -12,7 +12,7 @@ pipeline
         stage('Check for Changes') {
             steps {
                 script {
-                    def changeset = currentBuild.changeSets[0]
+                    def changeset = currentBuild.changeSet
                     def projectFileChanged = false
                     echo "looking for changeset"
                     if (changeset) {
@@ -26,14 +26,14 @@ pipeline
                     echo "deciding to skip or not"
                     if (!projectFileChanged && env.BRANCH_NAME == 'main') {
                         echo 'No changes to project files detected on the main branch. Skipping pipeline execution.'
-                        if (!projectFileChanged) 
-                        {
+                        if (!projectFileChanged) {
                             error('Skipping pipeline')
                         }
                     }
                 }
             }
         }
+
 
 
         stage('Cleanup') 
