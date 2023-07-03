@@ -80,6 +80,18 @@ pipeline
                     sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:1.${BUILD_NUMBER} ."
                     sh "docker push --all-tags oksthefox/dockerflask"
                 }
+            }
+        }
+        
+        stage('Build-create docker image and push') 
+        {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps 
+            {
                 dir('./flask/mysql/')
                 {
                     echo 'building db'
@@ -88,7 +100,6 @@ pipeline
                 }
             }
         }
-        
 
         stage('Get Test+Prod Instance Details + install docker')
         {
