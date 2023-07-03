@@ -76,9 +76,15 @@ pipeline
                 dir('./flask/flask-app/') 
                 {
                     // Stage building
-                    echo 'Building Docker'
+                    echo 'Building flask'
                     sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:1.${BUILD_NUMBER} ."
                     sh "docker push --all-tags oksthefox/dockerflask"
+                }
+                dir('./flask/mysql/')
+                {
+                    echo 'building db'
+                    sh "docker build -t oksthefox/dockerdb:latest -t oksthefox/dockerdb:1.${BUILD_NUMBER} ."
+                    sh "docker push --all-tags oksthefox/dockerdb"
                 }
             }
         }
