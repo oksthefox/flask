@@ -13,8 +13,13 @@ pipeline
             steps {
                 script {
                     def changeSets = currentBuild.changeSets
-                    def modifiedFiles = changeSets.collectMany { it.items.collect { file -> file.path } }
-                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
+                    def modifiedFiles = []
+                    for(changeSet in changeSets) {
+                        for(item in changeSet) {
+                            modifiedFiles += item.getAffectedPaths()
+                        }
+                    }
+                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2') 
 
                     if (modifiedFiles.isEmpty()) {
                         error('Skipping pipeline execution as the only change is to the Jenkinsfile.')
@@ -22,6 +27,7 @@ pipeline
                 }
             }
         }
+
 
 
 
