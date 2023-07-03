@@ -9,33 +9,6 @@ pipeline
     
     stages 
     {
-        stage('Check for Changes') {
-            steps {
-                script {
-                    def changeset = currentBuild.changeSet
-                    def projectFileChanged = false
-                    echo "Looking for changeset..."
-                    if (changeset) {
-                        for (change in changeset.items) {
-                            if (!change.path.startsWith('Jenkinsfile') && !change.path.endsWith('.groovy')) {
-                                projectFileChanged = true
-                                break
-                            }
-                        }
-                    }
-                    echo "Deciding to skip or not..."
-                    if (projectFileChanged || env.BRANCH_NAME != 'main') {
-                        echo 'Changes detected in project files or not on the main branch. Proceeding with pipeline execution.'
-                    } else {
-                        echo 'No changes to project files detected on the main branch. Skipping pipeline execution.'
-                        error('Skipping pipeline')
-                    }
-                }
-            }
-        }
-
-
-
 
         stage('Cleanup') 
         {
