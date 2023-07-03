@@ -14,7 +14,7 @@ pipeline
                 script {
                     def changeSets = currentBuild.changeSets
                     def modifiedFiles = changeSets.collectMany { it.items.collect { file -> file.path } }
-                    modifiedFiles.remove('Jenkinsfile-dockercompose2') // Exclude Jenkinsfile from the check
+                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
 
                     if (modifiedFiles.isEmpty()) {
                         error('Skipping pipeline execution as the only change is to the Jenkinsfile.')
