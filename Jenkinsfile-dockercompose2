@@ -12,7 +12,8 @@ pipeline
         stage('Changes Check') 
         {
             steps {
-                script {
+                script 
+                {
                     def changeSets = currentBuild.changeSets
                     def modifiedFiles = []
                     for(changeSet in changeSets) {
