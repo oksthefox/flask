@@ -9,6 +9,7 @@ pipeline
     
     stages 
     {
+        
         stage('Changes Check') 
         {
             steps {
@@ -30,11 +31,6 @@ pipeline
                 }
             }
         }
-
-
-
-
-
 
         stage('Cleanup') 
         {
