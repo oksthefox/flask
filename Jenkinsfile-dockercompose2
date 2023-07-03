@@ -9,6 +9,22 @@ pipeline
     
     stages 
     {
+        stage('Changes Check') 
+        {
+            steps {
+                script {
+                    // Check if any files other than Jenkinsfile were modified
+                    def changes = scm.changeset
+                    def modifiedFiles = changes.collect { it.path }
+                    modifiedFiles.remove('Jenkinsfile') // Exclude Jenkinsfile from the check
+                    
+                    if (modifiedFiles.isEmpty()) {
+                        error('Skipping pipeline execution as the only change is to the Jenkinsfile.')
+                    }
+                }
+            }
+        }
+
         stage('Cleanup') 
         {
             steps 
