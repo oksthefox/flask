@@ -9,7 +9,8 @@ pipeline
     
     stages 
     {
-        stage('Changes Check') {
+        stage('Changes Check') 
+        {
             steps {
                 script {
                     def changeSets = currentBuild.changeSets
@@ -19,12 +20,11 @@ pipeline
                             modifiedFiles += item.getAffectedPaths()
                         }
                     }
-                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2') 
+                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
 
                     if (modifiedFiles.isEmpty()) {
                         println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
-                        currentBuild.result = 'SUCCESS'
-                        return
+                        env.NO_CHANGES = "true"
                     }
                 }
             }
@@ -37,6 +37,11 @@ pipeline
 
         stage('Cleanup') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 //Removes Unnecessary files
@@ -48,6 +53,11 @@ pipeline
         
         stage('Clone') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps
             {
                 //clonning from github to workspace
@@ -59,6 +69,11 @@ pipeline
         
         stage('Build-create docker image and push') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 dir('./flask/flask-app/') 
@@ -74,6 +89,11 @@ pipeline
 
         stage('Get Test+Prod Instance Details + install docker')
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 //pulls IP of test instance by automatical means
@@ -122,6 +142,11 @@ pipeline
 
         stage("install test+prod docker")
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps
             {
                 dir('/var/lib/jenkins/ansible-docker-jenkins')
@@ -135,6 +160,11 @@ pipeline
 
         stage('fetch docker-compose file to test+prod')
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps
             {
                 echo "transferring docker-compose to test"
@@ -146,6 +176,11 @@ pipeline
 
         stage('Pull + Run from dockerhub to test server') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 echo "cleaning"
@@ -158,6 +193,11 @@ pipeline
 
         stage('Test') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 sh "curl http://${env.publicTestIp}:5000"
@@ -166,6 +206,11 @@ pipeline
         
         stage('Closing test server- if success') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 echo "closing container"
@@ -180,6 +225,11 @@ pipeline
         
         stage('Deployment') 
         {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
             steps 
             {
                 echo 'Deploying to the production server...'
