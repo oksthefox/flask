@@ -83,7 +83,7 @@ pipeline
             }
         }
         
-        stage('Build-create docker image and pushaaaa') 
+        stage('Build-create docker image and push') 
         {
             when {
                 expression {
