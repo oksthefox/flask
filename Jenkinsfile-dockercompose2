@@ -199,6 +199,7 @@ pipeline
                 echo "cleaning"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'sudo docker container prune --force'"
                 echo 'pull +run docker'
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'docker-compose pull"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'docker-compose up --no-build -d'"
             }
         }
