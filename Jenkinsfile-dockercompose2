@@ -247,6 +247,7 @@ pipeline
             steps 
             {
                 echo 'Deploying to the production server...'
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicTestIp} 'docker-compose pull"
                 echo "Shutting Down Old Flask..."
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker-compose down --no-build'"
                 echo "Running Updated Flask..."
