@@ -15,18 +15,31 @@ pipeline
                 script 
                 {
                     def changeSets = currentBuild.changeSets
-                    def modifiedFiles = []
-                    for(changeSet in changeSets) {
-                        for(item in changeSet) {
-                            modifiedFiles += item.getAffectedPaths()
-                        }
-                    }
-                    modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
-
-                    if (modifiedFiles.isEmpty()) {
-                        println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
+                    if(changeSets.size()==0)
+                    {
+                        echo "no changes, ran manually proceeding"
                         env.NO_CHANGES = "true"
                     }
+                    else
+                    {
+                        def modifiedFiles = []
+                        for(changeSet in changeSets) {
+                            for(item in changeSet) {
+                                modifiedFiles += item.getAffectedPaths()
+                            }
+                        }
+                        modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
+                        if (modifiedFiles.isEmpty()) 
+                        {
+                            println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
+                            env.NO_CHANGES = "true"
+                        }
+                        else
+                        {
+                            env.NO_CHANGES = "false"
+                        }
+                    }
+
                 }
             }
         }
