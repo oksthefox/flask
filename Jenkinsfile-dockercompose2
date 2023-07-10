@@ -18,7 +18,7 @@ pipeline
                     if(changeSets.size()==0)
                     {
                         echo "no changes, ran manually proceeding"
-                        env.NO_CHANGES = "true"
+                        env.NO_CHANGES = "false"
                     }
                     else
                     {
