@@ -1,0 +1,154 @@
+pipeline 
+{
+    agent any
+    
+    triggers 
+    {
+        pollSCM('*/1 * * * *')
+    }
+    
+    stages 
+    {
+        stage('Changes Check') 
+        {
+            steps 
+            {
+                script 
+                {
+                    def changeSets = currentBuild.changeSets
+                    if(changeSets.size()==0)
+                    {
+                        echo "no changes, ran manually proceeding"
+                        env.NO_CHANGES = "false"
+                    }
+                    else
+                    {
+                        def modifiedFiles = []
+                        for(changeSet in changeSets) {
+                            for(item in changeSet) {
+                                modifiedFiles += item.getAffectedPaths()
+                            }
+                        }
+                        modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
+                        if (modifiedFiles.isEmpty()) 
+                        {
+                            println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
+                            env.NO_CHANGES = "true"
+                        }
+                        else
+                        {
+                            env.NO_CHANGES = "false"
+                        }
+                    }
+
+                }
+            }
+        }
+
+        stage('Cleanup') 
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps 
+            {
+                //Removes Unnecessary files
+                echo 'Performing cleanup...'
+                sh 'rm -rf *'
+                sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
+                sh "docker images | grep -w 'oksthefox/dockerdb' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerdb:{}"
+            }
+        }
+        
+        stage('Clone') 
+        {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps
+            {
+                //clonning from github to workspace
+                echo 'Cloning repository...'
+                sh 'git clone https://github.com/oksthefox/flask.git'
+                sh 'ls'
+            }
+        }
+
+        stage('Install Dependencies')
+        {
+            when{
+                expression{
+                    return env.NO_CHANGES !="true"
+                }
+            }
+            steps
+            {
+                script
+                {
+                    sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
+                    sh "pip install -r ./flask/flask-app/requirements.txt"
+                }
+            }
+        }
+
+        stage('Build-create docker image and push') 
+        {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps 
+            {
+                dir('./flask/flask-app/') 
+                {
+                    // Stage building
+                    echo 'Building flask'
+                    sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:1.${BUILD_NUMBER} ."
+                    sh "docker push --all-tags oksthefox/dockerflask"
+                }
+            }
+        }
+        
+        stage('Build-create docker DB image and push') 
+        {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps 
+            {
+                dir('./flask/mysql/')
+                {
+                    echo 'building db'
+                    sh "docker build -t oksthefox/dockerdb:latest -t oksthefox/dockerdb:1.${BUILD_NUMBER} ."
+                    sh "docker push --all-tags oksthefox/dockerdb"
+                }
+            }
+        }
+        
+        stage('Deployment') 
+        {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps 
+            {
+                echo 'Making Sure im in right context...'
+                sh "kubectl config use-context docker-desktop"
+                echo "deploying application"
+                sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
+                sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+            }
+        }
+    }
+}

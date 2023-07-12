@@ -11,7 +11,8 @@ pipeline
     {
         stage('Changes Check') 
         {
-            steps {
+            steps 
+            {
                 script 
                 {
                     def changeSets = currentBuild.changeSets
@@ -46,8 +47,10 @@ pipeline
 
         stage('Cleanup') 
         {
-            when {
-                expression {
+            when 
+            {
+                expression 
+                {
                     return env.NO_CHANGES != "true"
                 }
             }
