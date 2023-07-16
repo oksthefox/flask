@@ -19,7 +19,7 @@ pipeline
                     if(changeSets.size()==0)
                     {
                         echo "no changes, ran manually proceeding"
-                        env.NO_CHANGES = "false"
+                        env.RELEVANT_CHANGES = "true"
                     }
                     else
                     {
@@ -29,15 +29,15 @@ pipeline
                                 modifiedFiles += item.getAffectedPaths()
                             }
                         }
-                        modifiedFiles = modifiedFiles.minus('Jenkinsfile-dockercompose2')
+                        modifiedFiles = modifiedFiles.minus('Jenkinsfile-kube')
                         if (modifiedFiles.isEmpty()) 
                         {
                             println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
-                            env.NO_CHANGES = "true"
+                            env.RELEVANT_CHANGES = "false"
                         }
                         else
                         {
-                            env.NO_CHANGES = "false"
+                            env.RELEVANT_CHANGES = "true"
                         }
                     }
 
@@ -51,7 +51,7 @@ pipeline
             {
                 expression 
                 {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
             steps 
@@ -68,7 +68,7 @@ pipeline
         {
             when {
                 expression {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
             steps
@@ -84,7 +84,7 @@ pipeline
         {
             when{
                 expression{
-                    return env.NO_CHANGES !="true"
+                    return env.RELEVANT_CHANGES !="false"
                 }
             }
             steps
@@ -101,7 +101,7 @@ pipeline
         {
             when {
                 expression {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
             steps 
@@ -120,7 +120,7 @@ pipeline
         {
             when {
                 expression {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
             steps 
@@ -138,7 +138,7 @@ pipeline
         {
             when {
                 expression {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
             steps 
@@ -154,13 +154,13 @@ pipeline
         stage('Rollout Restart') {
             when {
                 expression {
-                    return env.NO_CHANGES != "true"
+                    return env.RELEVANT_CHANGES != "false"
                 }
             }
-            steps {
+            steps 
+            {
                 echo 'Performing rollout restart...'
                 sh "kubectl rollout restart deployment/flask-deployment"
-                sh "kubectl rollout restart deployment/mysql-deployment"
             }
         }
     }
