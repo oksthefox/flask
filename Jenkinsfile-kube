@@ -61,6 +61,7 @@ pipeline
                 sh 'rm -rf *'
                 sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
                 sh "docker images | grep -w 'oksthefox/dockerdb' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerdb:{}"
+                sh 'docker rmi $(docker images --filter "dangling=true" -q)'
             }
         }
         
@@ -110,7 +111,7 @@ pipeline
                 {
                     // Stage building
                     echo 'Building flask'
-                    sh "docker build -t oksthefox/dockerflask:latest -t oksthefox/dockerflask:1.${BUILD_NUMBER} ."
+                    sh "docker build -t oksthefox/dockerflask:1.${BUILD_NUMBER} -t oksthefox/dockerflask:latest ."
                     sh "docker push --all-tags oksthefox/dockerflask"
                 }
             }
@@ -128,7 +129,7 @@ pipeline
                 dir('./flask/mysql/')
                 {
                     echo 'building db'
-                    sh "docker build -t oksthefox/dockerdb:latest -t oksthefox/dockerdb:1.${BUILD_NUMBER} ."
+                    sh "docker build -t oksthefox/dockerdb:1.${BUILD_NUMBER} -t oksthefox/dockerdb:latest ."
                     sh "docker push --all-tags oksthefox/dockerdb"
                 }
             }
