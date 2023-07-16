@@ -150,5 +150,18 @@ pipeline
                 sh "kubectl apply -f ./flask/kubeFiles/service.yml"
             }
         }
+
+        stage('Rollout Restart') {
+            when {
+                expression {
+                    return env.NO_CHANGES != "true"
+                }
+            }
+            steps {
+                echo 'Performing rollout restart...'
+                sh "kubectl rollout restart deployment/flask-deployment"
+                sh "kubectl rollout restart deployment/mysql-deployment"
+            }
+        }
     }
 }
