@@ -68,8 +68,9 @@ pipeline
         stage('Install Dependencies')
         {
             when{
-                expression{
-                    return env.RELEVANT_CHANGES ="true"
+                expression
+                {
+                    return env.RELEVANT_CHANGES = "true"
                 }
             }
             steps
