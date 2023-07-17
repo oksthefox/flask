@@ -6,6 +6,12 @@ pipeline
     {
         pollSCM('*/1 * * * *')
     }
+
+    environment
+    {
+        GITURL="git@github.com:oksthefox/flask.git"
+        ANSIBLEFOLDER="/var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles"
+    }
     
     stages 
     {
@@ -15,32 +21,7 @@ pipeline
             {
                 script 
                 {
-                    def changeSets = currentBuild.changeSets
-                    if(changeSets.size()==0)
-                    {
-                        echo "no changes, ran manually proceeding"
-                        env.RELEVANT_CHANGES = "true"
-                    }
-                    else
-                    {
-                        def modifiedFiles = []
-                        for(changeSet in changeSets) {
-                            for(item in changeSet) {
-                                modifiedFiles += item.getAffectedPaths()
-                            }
-                        }
-                        modifiedFiles = modifiedFiles.minus('Jenkinsfile-kube')
-                        if (modifiedFiles.isEmpty()) 
-                        {
-                            println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
-                            env.RELEVANT_CHANGES = "false"
-                        }
-                        else
-                        {
-                            env.RELEVANT_CHANGES = "true"
-                        }
-                    }
-
+                    changeCheck("Jenkinsfile-kube")
                 }
             }
         }
@@ -79,7 +60,7 @@ pipeline
             {
                 //clonning from github to workspace
                 echo 'Cloning repository...'
-                sh 'git clone git@github.com:oksthefox/flask.git'
+                sh "git clone $env.GITURL"
                 sh 'ls'
             }
         }
@@ -88,14 +69,14 @@ pipeline
         {
             when{
                 expression{
-                    return env.RELEVANT_CHANGES !="false"
+                    return env.RELEVANT_CHANGES ="true"
                 }
             }
             steps
             {
                 script
-                {
-                    sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
+                {               
+                    sh "ansible-playbook $env.ANSIBLEFOLDER/installLocal.yml"
                     sh "pip install -r ./flask/flask-app/requirements.txt"
                 }
             }
@@ -168,4 +149,37 @@ pipeline
             }
         }
     }
+}
+
+
+def changeCheck (String jenkinsfile)
+{
+    def changeSets = currentBuild.changeSets
+    if(changeSets.size()==0)
+    {
+        echo "no changes, ran manually proceeding"
+        env.RELEVANT_CHANGES = "true"
+    }
+    else
+    {
+        def modifiedFiles = []
+        for(changeSet in changeSets) 
+        {
+            for(item in changeSet) 
+            {
+                modifiedFiles += item.getAffectedPaths()
+            }
+        }
+        modifiedFiles = modifiedFiles.minus("$jenkinsfile")
+        if (modifiedFiles.isEmpty()) 
+        {
+            println('Skipping pipeline execution as the only change is to the Jenkinsfile.')
+            env.RELEVANT_CHANGES = "false"
+        }
+        else
+        {
+            env.RELEVANT_CHANGES = "true"
+        }
+    }
+
 }
