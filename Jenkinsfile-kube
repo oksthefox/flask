@@ -149,13 +149,17 @@ pipeline
             }
             steps 
             {
-                echo 'Making Sure im in right context...'
-                sh "kubectl config use-context docker-desktop"
-                echo "deploying application"
-                sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
-                sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+                script
+                {
+                    echo 'Making Sure im in right context...'
+                    sh "kubectl config use-context docker-desktop"
+                    echo "deploying application"
+                    sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
+                    sh "kubectl apply -f ./flask/kubeFiles/service.yml"
 
-                env.KUBECTLTCPPORT=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
+                    env.KUBECTLTCPPORT=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
+                }
+
             }
         }
 
