@@ -231,7 +231,7 @@ pipeline
                 script
                 {
                     echo "deploying on google k8s production..."
-                    sh "kubectl config use-context gke_ultra-palisade-393305_europe-north1-a_flask-production"
+                    sh "kubectl config use-context gke_ultra-palisade-393305_europe-north1-a_cluster-1"
                     sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
                     sh "kubectl apply -f ./flask/kubeFiles/service.yml"
 
