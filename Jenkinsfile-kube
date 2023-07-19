@@ -190,7 +190,7 @@ pipeline
             }
             steps
             {
-                sh "sleep 10"
+                sh "sleep 20"
                 sh "curl http://${env.WINDOWSIP}:${env.KUBECTLTCPPORT}"
             }
         }
