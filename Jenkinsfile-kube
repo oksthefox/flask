@@ -28,7 +28,7 @@ pipeline
                 {
                     echo "open a terminal where it running proxy command in the backround..."
                     sh '''
-                        nohub ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "kubectl proxy --address=0.0.0.0 --port=8080 --accept-hosts=.*" &
+                        nohup ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "kubectl proxy --address=0.0.0.0 --port=8080 --accept-hosts=.*" &
                     '''
                     
                 }
