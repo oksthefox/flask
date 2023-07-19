@@ -253,6 +253,7 @@ pipeline
                 echo 'Performing rollout restart...'
                 sh "kubectl rollout restart deployment/flask-deployment"
                 sh "kubectl rollout restart deployment/mysql-deployment"
+                sh "kubectl get all"
             }
         }
 
