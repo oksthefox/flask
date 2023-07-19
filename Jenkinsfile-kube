@@ -6,9 +6,31 @@ pipeline
     {
         pollSCM('*/1 * * * *')
     }
+
+    environment
+    {
+        WINDOWSIP="192.168.56.1"
+        KUBECTLTCPPORT=""
+        GIT_SSH_COMMAND = "ssh -o StrictHostKeyChecking=no"  
+    }
     
     stages 
     {
+
+        stage('start proxy')
+        {
+            steps
+            {
+                script
+                {
+                    echo "open a terminal where it running proxy command in the backround..."
+                    sh '''
+                        nohub ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "kubectl proxy --address=0.0.0.0 --port=8080 --accept-hosts=.*" &
+                    '''
+                    
+                }
+            }
+        }
         stage('Changes Check') 
         {
             steps 
@@ -66,10 +88,7 @@ pipeline
         
         stage('Clone') 
         {
-            environment 
-            {
-                GIT_SSH_COMMAND = "ssh -o StrictHostKeyChecking=no"
-            }
+
             when {
                 expression {
                     return env.RELEVANT_CHANGES != "false"
@@ -86,8 +105,10 @@ pipeline
 
         stage('Install Dependencies')
         {
-            when{
-                expression{
+            when
+            {
+                expression
+                {
                     return env.RELEVANT_CHANGES !="false"
                 }
             }
@@ -95,6 +116,9 @@ pipeline
             {
                 script
                 {
+                    echo "install the most upgraded pip version"
+                    sh "pip install --upgrade pip"
+                    echo "installing by playbook all the dependencies"
                     sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
                     sh "pip install -r ./flask/flask-app/requirements.txt"
                 }
@@ -104,7 +128,8 @@ pipeline
         stage('Build-create docker image and push') 
         {
             when {
-                expression {
+                expression 
+                {
                     return env.RELEVANT_CHANGES != "false"
                 }
             }
@@ -122,8 +147,10 @@ pipeline
         
         stage('Build-create docker DB image and push') 
         {
-            when {
-                expression {
+            when 
+            {
+                expression 
+                {
                     return env.RELEVANT_CHANGES != "false"
                 }
             }
@@ -138,10 +165,12 @@ pipeline
             }
         }
         
-        stage('Deployment') 
+        stage('Deploy for testing') 
         {
-            when {
-                expression {
+            when 
+            {
+                expression 
+                {
                     return env.RELEVANT_CHANGES != "false"
                 }
             }
@@ -152,12 +181,17 @@ pipeline
                 echo "deploying application"
                 sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
                 sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+
+                env.KUBECTLTCPPORT=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
             }
         }
 
-        stage('Rollout Restart') {
-            when {
-                expression {
+        stage('Rollout Restart Test') 
+        {
+            when 
+            {
+                expression 
+                {
                     return env.RELEVANT_CHANGES != "false"
                 }
             }
@@ -165,7 +199,106 @@ pipeline
             {
                 echo 'Performing rollout restart...'
                 sh "kubectl rollout restart deployment/flask-deployment"
+                sh "kubectl rollout restart deployment/mysql-deployment"
             }
         }
+
+        stage('Test testing enviornment (d4d)')
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.RELEVANT_CHANGES != "false"
+                }
+            }
+            steps
+            {
+                sh "curl http://${env.WINDOWSIP}:${env.KUBECTLTCPPORT}"
+            }
+        }
+
+        
+        stage('closing testing enviroment')
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.RELEVANT_CHANGES != "false"
+                }
+            }
+            steps
+            {
+                script
+                {
+                    echo "closing test enviroment..."
+                    sh "kubectl delete -f ./flask/kubeFiles/deployment.yml"
+                    sh "kubectl delete -f ./flask/kubeFiles/service.yml"
+                }
+
+            }
+        }
+
+        stage('deploying on google k8s production')
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.RELEVANT_CHANGES != "false"
+                }
+            }
+            steps
+            {
+                script
+                {
+                    echo "deploying on google k8s production..."
+                    sh "kubectl config use-context gke_ultra-palisade-393305_europe-north1-a_flask-production"
+                    sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
+                    sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+
+                }
+            }
+
+        }
+
+        stage('Rollout Restart K8s') 
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.RELEVANT_CHANGES != "false"
+                }
+            }
+            steps 
+            {
+                echo 'Performing rollout restart...'
+                sh "kubectl rollout restart deployment/flask-deployment"
+                sh "kubectl rollout restart deployment/mysql-deployment"
+            }
+        }
+
+        stage('closing proxy')
+        {
+            when 
+            {
+                expression 
+                {
+                    return env.RELEVANT_CHANGES != "false"
+                }
+            }
+            steps
+            {
+                script
+                {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "taskkill /F /IM kubectl.exe"
+                    '''
+                }
+            }
+        }
+
     }
 }
