@@ -10,7 +10,6 @@ pipeline
     environment
     {
         WINDOWSIP="192.168.56.1"
-        KUBECTLTCPPORT=""
         GIT_SSH_COMMAND = "ssh -o StrictHostKeyChecking=no" 
         GITURL="git@github.com:oksthefox/flask.git"
         ANSIBLEFOLDER="/var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles"
@@ -156,8 +155,8 @@ pipeline
                     echo "deploying application"
                     sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
                     sh "kubectl apply -f ./flask/kubeFiles/service.yml"
-
-                    env.KUBECTLTCPPORT=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
+                    def tcpport=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
+                    env.KUBECTLTCPPORT=tcpport
                 }
 
             }
