@@ -154,7 +154,7 @@ pipeline
                     sh "kubectl config use-context docker-desktop"
                     echo "deploying application"
                     sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
-                    sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+                    sh "kubectl apply -f ./flask/kubeFiles/service-test.yml"
                     def tcpport=sh(script: "kubectl get service flask-service -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
                     env.KUBECTLTCPPORT=tcpport
                 }
@@ -211,7 +211,7 @@ pipeline
                 {
                     echo "closing test enviroment..."
                     sh "kubectl delete -f ./flask/kubeFiles/deployment.yml"
-                    sh "kubectl delete -f ./flask/kubeFiles/service.yml"
+                    sh "kubectl delete -f ./flask/kubeFiles/service-test.yml"
                 }
 
             }
@@ -233,7 +233,7 @@ pipeline
                     echo "deploying on google k8s production..."
                     sh "kubectl config use-context gke_ultra-palisade-393305_europe-north1-a_cluster-1"
                     sh "kubectl apply -f ./flask/kubeFiles/deployment.yml"
-                    sh "kubectl apply -f ./flask/kubeFiles/service.yml"
+                    sh "kubectl apply -f ./flask/kubeFiles/service-deployment.yml"
 
                 }
             }
