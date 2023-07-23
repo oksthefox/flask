@@ -58,6 +58,7 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
+                sh "docker image prune -f"
                 sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
                 sh "docker images | grep -w 'oksthefox/dockerdb' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerdb:{}"
             }
