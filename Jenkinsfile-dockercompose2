@@ -112,7 +112,7 @@ pipeline
             {
                 script
                 {
-                    sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
+                    sh "ansible-playbook /var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles/installLocal.yml"
                     sh "pip install -r ./flask/flask-app/requirements.txt"
                 }
             }
@@ -217,7 +217,7 @@ pipeline
             }
             steps
             {
-                dir('/var/lib/jenkins/ansible-docker-jenkins')
+                dir('/var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles')
                 {
                     echo "installing all needed"
                     sh "ansible-playbook -i aws_ec2.yml installallcomponents.yml"

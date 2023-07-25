@@ -105,7 +105,7 @@ pipeline
             {
                 script
                 {
-                    sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
+                    sh "ansible-playbook /var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles/installLocal.yml"
                     sh "pip install -r ./flask/flask-app/requirements.txt"
                 }
             }
