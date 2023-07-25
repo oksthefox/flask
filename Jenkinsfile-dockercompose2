@@ -6,9 +6,16 @@ pipeline
     {
         pollSCM('*/1 * * * *')
     }
+
+    environment 
+    {
+        WINDOWSUSERNAME = 'user'
+        WINDOWSIP = '192.168.56.1'
+    }
     
     stages 
     {
+
 
         stage('Docker Login') 
         {

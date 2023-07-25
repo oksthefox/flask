@@ -40,7 +40,7 @@ pipeline
                 {
                     echo "open a terminal where it running proxy command in the backround..."
                     sh '''
-                        nohup ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "kubectl proxy --address=0.0.0.0 --port=8080 --accept-hosts=.*" &
+                        nohup ssh -o StrictHostKeyChecking=no user@192.168.56.1 "kubectl proxy --address=0.0.0.0 --port=8080 --accept-hosts=.*" &
                     '''
                     
                 }
@@ -286,7 +286,7 @@ pipeline
                 script
                 {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no pavel@192.168.56.1 "taskkill /F /IM kubectl.exe"
+                        ssh -o StrictHostKeyChecking=no user@192.168.56.1 "taskkill /F /IM kubectl.exe"
                     '''
                 }
             }
