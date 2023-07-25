@@ -99,6 +99,24 @@ pipeline
                 sh 'ls'
             }
         }
+
+
+        stage('Install Systen Level Dependencies')
+        {
+            when{
+                expression{
+                    return env.RELEVANT_CHANGES !="false"
+                }
+            }
+            steps
+            {
+                script
+                {
+                    sh "ansible-playbook /var/lib/jenkins/ansible-docker-jenkins/installLocal.yml"
+                    sh "pip install -r ./flask/flask-app/requirements.txt"
+                }
+            }
+        }
         
         stage('Build-create docker image and push') 
         {
