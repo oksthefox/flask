@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 COPY . .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip --default-timeout=100 install --no-cache-dir -r requirements.txt
 
 # Tell the port number the container should expose
 EXPOSE 5000
