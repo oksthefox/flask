@@ -4,7 +4,7 @@ import os
 import random
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='Web', static_folder='CSS')
 
 # Configure MySQL connection
 db = None
