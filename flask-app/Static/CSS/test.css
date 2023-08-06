@@ -7,8 +7,6 @@
 body
 {
     background: #eeeeee;
-    color: #fff;
-
 }
 #header
 {
@@ -126,6 +124,14 @@ nav ul li a:hover::after
     font-weight: 600;
     color: #ff004f;
 }
+
+.sub-title p
+{
+    font-size: 30px;
+    font-weight: 600;
+    color: #2b2024;
+}
+
 .tab-titles
 {
     margin: 20px 0 40px;
@@ -207,6 +213,7 @@ nav ul li a:hover::after
 {
     background: #2b2024;
     padding: 40px;
+    color: white;
     font-size: 13px;
     font-weight: 300;
     border-radius: 10px;
@@ -277,6 +284,7 @@ nav ul li a:hover::after
 .layer  
 {
     width: 100%;
+    color:white;
     height: 0;
     background: linear-gradient(rgba(0,0,0,0.5), #ff004f);
     border-radius: 10px;
@@ -335,8 +343,8 @@ nav ul li a:hover::after
     padding: 14px 50px;
     border-radius: 6px;
     text-decoration: none;
-    color: #fff;
-    transition: background 0.3s;
+    color: #2b2024;
+    transition: background 0.3s , color 0.3s;
 }
 
 .btn:hover
@@ -430,6 +438,7 @@ form .btn2
     padding: 20px;
     background: #2b2024;
     font-weight: 300;
+    color: #eeeeee;
 }
 
 .copyright i
