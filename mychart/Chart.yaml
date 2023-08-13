@@ -1,0 +1,12 @@
+apiVersion: v2
+name: myproject
+version: 0.1.0
+description: Helm chart for my project with Flask, MySQL, Prometheus, and Grafana
+dependencies:
+- name: prometheus
+  version: "23.3.0"
+  repository: "https://prometheus-community.github.io/helm-charts"
+- name: grafana
+  version: "6.58.8"
+  repository: "https://grafana.github.io/helm-charts"
+  

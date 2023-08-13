@@ -33,7 +33,9 @@ while db is None:
 @app.route("/", methods=["GET", "POST"])
 def test():
     if request.method == "POST":
-        CV_downloads.inc()
+        if 'formDownload' in request.form:
+            CV_downloads.inc()
+            return send_from_directory('Static/images', 'Resume.jpg', as_attachment=True)
     return render_template("test.html")
 
 

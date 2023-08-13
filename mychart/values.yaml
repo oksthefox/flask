@@ -1,0 +1,58 @@
+flask:
+  replicaCount: 1
+  image:
+    repository: oksthefox/dockerflask
+    tag: latest
+  environment:
+    MYSQL_PASSWORD: password
+    MYSQL_USER: root
+    MYSQL_HOST: db
+    MYSQL_DATABASE: flask_db
+  service:
+    testing:
+      name: flask-service-testing
+      port: 80
+      targetPort: 5000
+      type: NodePort
+    production:
+      name: flask-service-production
+      port: 80
+      targetPort: 5000
+      type: LoadBalancer
+
+mysql:
+  replicaCount: 1
+  image:
+    repository: oksthefox/dockerdb
+    tag: latest
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+  service:
+    name: db
+    port: 3306
+    targetPort: 3306
+    type: ClusterIP
+
+prometheus:
+  server:
+    config:
+      global:
+        scrape_interval: 15s
+      scrape_configs:
+        - job_name: 'flask'
+          static_configs:
+            - targets: ['flask-service-testing:80']
+          metrics_path: '/metrics'
+    podSecurityPolicy:
+      enabled: false
+    service:
+      type: NodePort
+
+grafana:
+  adminUser: admin
+  adminPassword: secret
+  podSecurityPolicy:
+    enabled: false
+  service:
+    type: NodePort
+    

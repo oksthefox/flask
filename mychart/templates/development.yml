@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+spec:
+  replicas: {{ .Values.flask.replicaCount }}
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask-container
+          image: {{ .Values.flask.image.repository }}:{{ .Values.flask.image.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.flask.environment.MYSQL_PASSWORD }}
+            - name: MYSQL_USER
+              value: {{ .Values.flask.environment.MYSQL_USER }}
+            - name: MYSQL_HOST
+              value: {{ .Values.flask.environment.MYSQL_HOST }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.flask.environment.MYSQL_DATABASE }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: {{ .Values.mysql.replicaCount }}
+  selector:
+    matchLabels:
+      app: mysql-app
+  template:
+    metadata:
+      labels:
+        app: mysql-app
+    spec:
+      containers:
+        - name: mysql-container
+          image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mysql.environment.MYSQL_ROOT_PASSWORD }}
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---

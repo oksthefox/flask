@@ -79,8 +79,11 @@ pipeline
                 //Removes Unnecessary files
                 echo 'Performing cleanup...'
                 sh 'rm -rf *'
+                sh "sudo docker image prune --force"
+                sh "sudo docker container prune --force"
                 sh "docker images | grep -w 'oksthefox/dockerflask' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerflask:{}"
                 sh "docker images | grep -w 'oksthefox/dockerdb' | grep -w 1\\.[0-9]* | awk '{print \$2}' | xargs -I {} docker rmi oksthefox/dockerdb:{}"
+                
             }
         }
         
@@ -118,7 +121,7 @@ pipeline
             }
         }
         
-        stage('Build-create docker image and push') 
+        stage('Build-create dockerflask image and push') 
         {
             when {
                 expression {
@@ -137,7 +140,7 @@ pipeline
             }
         }
         
-        stage('Build-create docker image and pushaaa') 
+        stage('Build-create dockerdb image and push') 
         {
             when {
                 expression {
@@ -155,7 +158,7 @@ pipeline
             }
         }
 
-        stage('Get Test+Prod Instance Details + install docker')
+        stage('Get Test+Prod Instance Details')
         {
             when {
                 expression {
@@ -237,8 +240,10 @@ pipeline
             {
                 echo "transferring docker-compose to test"
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicTestIp}:."
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/prometheusconfig.yml ec2-user@${env.publicTestIp}:."
                 echo "transferring docker-compose to prod"
                 sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/docker-compose.yml ec2-user@${env.publicProdIp}:."
+                sh "scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ./flask/prometheusconfig.yml ec2-user@${env.publicProdIp}:."
             }
         }
 
@@ -269,7 +274,20 @@ pipeline
             }
             steps 
             {
-                sh "curl http://${env.publicTestIp}:5000"
+                try 
+                {
+                    retry(30)
+                    {
+                        sleep 10
+                        sh "curl http://${env.publicTestIp}:5000"
+                    }
+                } 
+                catch (err) 
+                {
+                    echo "Test Failed"
+                    currentBuild.result = 'FAILURE'
+                    error "Test Failed"
+                }
             }
         }
         
@@ -302,6 +320,7 @@ pipeline
             steps 
             {
                 echo 'Deploying to the production server...'
+                sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'sudo docker container prune --force'"
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker-compose pull'"
                 echo "Shutting Down Old Flask..."
                 sh "ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/oks.pem ec2-user@${env.publicProdIp} 'docker-compose down --no-build'"
