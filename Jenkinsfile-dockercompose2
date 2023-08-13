@@ -274,20 +274,24 @@ pipeline
             }
             steps 
             {
-                try 
+                script
                 {
-                    retry(30)
+                    try 
                     {
-                        sleep 10
-                        sh "curl http://${env.publicTestIp}:5000"
+                        retry(30)
+                        {
+                            sleep 10
+                            sh "curl http://${env.publicTestIp}:5000"
+                        }
+                    } 
+                    catch (Exception e) 
+                    {
+                        echo "Test Failed"
+                        currentBuild.result = 'FAILURE'
+                        error "Test Failed"
                     }
-                } 
-                catch (err) 
-                {
-                    echo "Test Failed"
-                    currentBuild.result = 'FAILURE'
-                    error "Test Failed"
                 }
+
             }
         }
         
