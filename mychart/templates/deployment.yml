@@ -28,17 +28,6 @@ spec:
             - name: MYSQL_DATABASE
               value: {{ .Values.flask.environment.MYSQL_DATABASE }}
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -62,11 +51,14 @@ spec:
           env:
             - name: MYSQL_ROOT_PASSWORD
               value: {{ .Values.mysql.environment.MYSQL_ROOT_PASSWORD }}
-          volumeMounts:
-            - name: mysql-storage
-              mountPath: /var/lib/mysql
-      volumes:
-        - name: mysql-storage
-          persistentVolumeClaim:
-            claimName: mysql-pvc
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

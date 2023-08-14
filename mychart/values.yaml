@@ -55,4 +55,12 @@ grafana:
     enabled: false
   service:
     type: NodePort
+
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    accessModes:
+      - ReadWriteOnce
+    name: grafana-pvc
     
