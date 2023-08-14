@@ -198,7 +198,7 @@ pipeline
                     def releasename= "flask-release"
 
                     echo "Deployment..."
-                    sh "helm upgrade --install ${releasename} ${latestchart}"
+                    sh "helm upgrade --install ${releasename} ${latestchart} --debug"
 
                     def tcpport=sh(script: "kubectl get service flask-service-testing -o=jsonpath='{.spec.ports[*].nodePort}'", returnStdout: true).trim()
                     env.KUBECTLTCPPORT=tcpport
