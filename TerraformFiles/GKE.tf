@@ -1,21 +1,49 @@
+# Define required Terraform and provider versions
 terraform {
   required_providers {
     google = {
       source = "hashicorp/google"
     }
   }
+
+  # Backend configuration for Google Cloud Storage
   backend "gcs" {
     bucket = "my-terrform-state-oksana-flask-project"
     prefix = "terraform/state"
   }
 }
 
-
-provider "google" {
-  project     = "ultra-palisade-393305"
-  region      = "europe-north1"
+# Variable definitions to make the configuration more modular
+variable "project_id" {
+  description = "The ID of the Google Cloud project"
+  default     = "ultra-palisade-393305"
 }
 
+variable "region" {
+  description = "The Google Cloud region"
+  default     = "me-west1"
+}
+
+variable "zone" {
+  description = "The Google Cloud zone"
+  default     = "me-west1-a"
+}
+
+# Provider configuration for Google Cloud
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+# Local values for constants or computations
+locals {
+  oauth_scopes = [
+    "https://www.googleapis.com/auth/logging.write",
+    "https://www.googleapis.com/auth/monitoring"
+  ]
+}
+
+# VPC Network Configuration
 resource "google_compute_network" "vpc_network" {
   name                    = "vpc-network"
   auto_create_subnetworks = true
@@ -23,51 +51,60 @@ resource "google_compute_network" "vpc_network" {
   lifecycle {
     ignore_changes = all
   }
-
-
 }
 
-
+# GKE Cluster Configuration with default node pool
 resource "google_container_cluster" "primary" {
-  name     = "cluster-flask2"
-  location = "europe-north1-a"  # Set the location to europe-north1-a
+  name       = "cluster-flask2"
+  location   = var.zone
+  network    = google_compute_network.vpc_network.name
+  node_pool {
+    name       = "default-pool"
+    node_count = 1
 
-  remove_default_node_pool = true
-  initial_node_count = 1
+    node_config {
+      preemptible  = false
+      machine_type = "e2-small"
+      disk_size_gb = 30
+      image_type   = "COS_CONTAINERD"
+
+      metadata = {
+        disable-legacy-endpoints = "true"
+      }
+
+      oauth_scopes = local.oauth_scopes
+    }
+
+    management {
+      auto_repair  = true
+      auto_upgrade = true
+    }
+  }
 
   master_auth {
     client_certificate_config {
       issue_client_certificate = false
     }
   }
-
-  network    = google_compute_network.vpc_network.name
 }
 
-resource "google_container_node_pool" "primary" {
-  name       = "default-pool"
-  location   = "europe-north1-a"  # Set the location to europe-north1-a
-  cluster    = google_container_cluster.primary.name
-  node_count = 1
+# Firewall Rule for NodePort Range
+resource "google_compute_firewall" "gke_nodeport_rule" {
+  name    = "allow-gke-nodeport"
+  network = google_compute_network.vpc_network.name
 
-  node_config {
-    preemptible  = false
-    machine_type = "g1-small"
-    disk_size_gb = 80
-    image_type = "COS_CONTAINERD"
-
-    metadata = {
-      disable-legacy-endpoints = "true"
-    }
-
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
+  allow {
+    protocol = "tcp"
+    ports    = ["30000-32767"]
   }
 
-  management {
-    auto_repair  = true
-    auto_upgrade = true
+  allow {
+    protocol = "udp"
+    ports    = ["30000-32767"]
   }
+
+  # Apply the rule to all instances in the network
+  source_ranges = ["0.0.0.0/0"]
+
+  depends_on = [google_container_cluster.primary]
 }
