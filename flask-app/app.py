@@ -24,7 +24,7 @@ while db is None:
             database="flask_db"
         )
     except mysql.connector.Error as err:
-        print("Failled connecting to database. Retrying...")
+        print("Failed connecting to database. Retrying...")
         time.sleep(1)
 
 

@@ -111,7 +111,7 @@ pipeline
                         sh 'terraform init'
                         sh 'terraform apply -auto-approve'
                         echo 'Updating kubectl context...'
-                        sh 'gcloud container clusters get-credentials cluster-flask2 --zone me-west-1 --project ultra-palisade-393305'
+                        sh 'gcloud container clusters get-credentials cluster-flask2 --zone me-west1-a --project ultra-palisade-393305'
                     }
                 }
             }
