@@ -18,8 +18,6 @@ pipeline
         GIT_SSH_COMMAND = "ssh -o StrictHostKeyChecking=no" 
         GITURL="git@github.com:oksthefox/flask.git"
         ANSIBLEFOLDER="/var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles"
-        WINDOWSIP="192.168.56.1"
-        ANSIBLEFOLDER="/var/lib/jenkins/AnsibleFiles/Ansible-JenkinsFiles/installLocal.yml"
         REQUIREMENTSFILE="./flask/flask-app/requirements.txt"
         FLASKIMAGE="oksthefox/dockerflask"
         DBIMAGE="oksthefox/dockerdb"
