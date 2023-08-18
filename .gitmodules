@@ -1,0 +1,3 @@
+[submodule "pipelineFunctions"]
+	path = pipelineFunctions
+	url = git@github.com:oksthefox/functionforpipeline.git

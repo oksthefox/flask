@@ -1,3 +1,4 @@
+{{- if eq .Values.global.env "Testing" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,6 +11,7 @@ spec:
       port: {{ .Values.flask.service.testing.port }}
       targetPort: {{ .Values.flask.service.testing.targetPort }}
   type: {{ .Values.flask.service.testing.type }}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -24,6 +26,7 @@ spec:
       targetPort: {{ .Values.mysql.service.targetPort }}
   type: {{ .Values.mysql.service.type }}
 ---
+{{- if eq .Values.global.env "Production" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,3 +39,4 @@ spec:
       port: {{ .Values.flask.service.production.port }}
       targetPort: {{ .Values.flask.service.production.targetPort }}
   type: {{ .Values.flask.service.production.type }}
+{{- end }}

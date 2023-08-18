@@ -12,18 +12,22 @@
     <div id="header">
         <div class="container">
             <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About Me</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Portfolio</a></li>
-                    <li><a href="#">Contact Me</a></li>
+                <ul id="sidemenu">
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#About">About Me</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#Portfolio">Portfolio</a></li>
+                    <li><a href="#contact">Contact Me</a></li>
+                    <i class="fas fa-times" onclick="closemenu()"></i>
                 </ul>
+                <i class="fas fa-bars" onclick="openmenu()"></i>
             </nav>
             <div class="header-text">
                 <h1>Hey, I'm<span><br>Oksana Shevchenko</span></h1>
                 <p>DevOps Specialist</p>
-                <img src="img4.png" alt="Oksana Shevchenko" class="header-image">
+                <div class="home_img">
+                    <img src="img4.png" alt="Oksana Shevchenko" class="header-image">
+                </div>
             </div>
             
         </div>
@@ -152,12 +156,13 @@
                      </form>
                </div> 
                <div class="contact-right">
-                    <form>
+                    <form name="submit-to-google-sheet">
                         <input type="text" name="Name" placeholder="Your Name" required>
-                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="email" name="Email" placeholder="Your Email" required>
                         <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
                         <button type="submit" class="btn btn2">Submit</button>
                     </form>
+                    <span id="msg"></span>
                </div> 
             </div>
         </div>
@@ -166,6 +171,8 @@
         </div>
     </div>
 
+
+ <!---->>
 <script>
 
     var tabLinks = document.getElementsByClassName("tab-links");
@@ -184,6 +191,40 @@
         document.getElementById(tabname).classList.add("active-tab");
     }
 
+</script>
+
+
+<script>
+    var sidemenu = document.getElementById("sidemenu");
+
+    function openmenu()
+    {
+        sidemenu.style.right = "0";
+    }
+    function closemenu()
+    {
+        sidemenu.style.right = "-200px";
+    }
+</script>
+
+
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynev16LkAWon1y6m2PO8-B3YBzcChUKmS3pdJGPHKPlpn531WyIkNmiT82ytgWJhHA/exec'
+    const form = document.forms['submit-to-google-sheet']
+    const msg = document.getElementById('msg')
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(response => {
+            msg.innerHTML = "Message sent successfully"
+            setTimeout(function(){
+                msg.innerHTML = "" 
+            }, 5000)
+            form.reset()
+        })
+        .catch(error => console.error('Error!', error.message))
+    })
 </script>
 </body>
 </html>
