@@ -57,6 +57,7 @@ pipeline
                 }
             }
         }
+        
         // this stage is used to start the proxy
         stage('start proxy')
         {
