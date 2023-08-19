@@ -78,10 +78,11 @@ pipeline
                 script 
                 {
                     // Check for changes in the Jenkinsfile-kube file if only changes to the Jenkinsfile-kube file, skip the pipeline
-                    pipeline.changeCheck("${env.JENKINSFILE}")
+                    pipeline.changeCheck()
                 }
             }
         }
+
         // this stage is used to cleanup the workspace and the docker images
         stage('Cleanup') 
         {
