@@ -53,7 +53,7 @@ pipeline
                 script
                 {
                     // this function is used to login to docker
-                    docker.dockerLogin()    
+                    dockerfunctions.dockerLogin()    
                 }
             }
         }
@@ -66,7 +66,7 @@ pipeline
                 script
                 {
                     // this function is used to start the proxy using the windows ip on the windows machine
-                    k8s.IpForProxy("${env.WINDOWSIP}") 
+                    k8sfunctions.IpForProxy("${env.WINDOWSIP}") 
                 }
             }
         }
@@ -78,7 +78,7 @@ pipeline
                 script 
                 {
                     // Check for changes in the Jenkinsfile-kube file if only changes to the Jenkinsfile-kube file, skip the pipeline
-                    pipeline.changeCheck()
+                    pipelinefunctions.changeCheck()
                 }
             }
         }
@@ -98,9 +98,9 @@ pipeline
                 script 
                 {
                     //this function is used to cleanup the workspace
-                    pipeline.CleanupWorkspace()
+                    pipelinefunctions.CleanupWorkspace()
                     // this function is used to cleanup the docker images 
-                    docker.CleanupDocker("${env.FLASKIMAGE}","${env.DBIMAGE}")
+                    dockerfunctions.CleanupDocker("${env.FLASKIMAGE}","${env.DBIMAGE}")
                 }
             }
         }
@@ -120,7 +120,7 @@ pipeline
                 script
                 {
                     // this function is used to clone the repo from github to the workspace
-                    git.GitClone("${env.GITURL}")
+                    gitfunctions.GitClone("${env.GITURL}")
                     // this function is used to test if there are changes inn the helm chart and if there are it will send it to bucket and change the version on the chart
                     helm.packageHelmChart("${env.FLASKFOLDER}","${env.BUCKETNAME}","${env.BUCKETFOLDER}")
                 }
@@ -142,7 +142,7 @@ pipeline
                 script 
                 {
                     // this function is used to prepare the GKE cluster by creating it and installing the kubectl by using terraform
-                    terraform.terraformApply("${env.TERRAFORMFILESFOLDER}", "${env.GCPCLUSTERNAM}", "${env.GCPZONE}", "${env.GCPPROJECTID}")
+                    terraformfunctions.terraformApply("${env.TERRAFORMFILESFOLDER}", "${env.GCPCLUSTERNAM}", "${env.GCPZONE}", "${env.GCPPROJECTID}")
                 }
             }
         }
@@ -161,7 +161,7 @@ pipeline
                 script
                 {
                     // this function is used to install the system level dependencies
-                    ansible.InstallDependencies("${env.ANSIBLEFOLDER}","${env.PLAYBOOKFILE}")
+                    ansiblefunctions.InstallDependencies("${env.ANSIBLEFOLDER}","${env.PLAYBOOKFILE}")
                 }
             }
         }
@@ -180,7 +180,7 @@ pipeline
                 script
                 {
                     // this function is used to build the docker image for flask and push it to docker hub
-                    docker.BuildDocker("${env.FLASKAPPFOLDER}","${env.FLASKIMAGE}")
+                    dockerfunctions.BuildDocker("${env.FLASKAPPFOLDER}","${env.FLASKIMAGE}")
                 }
             }
         }
@@ -199,7 +199,7 @@ pipeline
                 script
                 {
                     // this function is used to build the docker image for mysql and push it to docker hub
-                    docker.BuildDocker("${env.MYSQLFOLDER}","${env.DBIMAGE}")
+                    dockerfunctions.BuildDocker("${env.MYSQLFOLDER}","${env.DBIMAGE}")
                 }
             }
         }
@@ -218,11 +218,11 @@ pipeline
                 script
                 {
                     // this function is used to change the context to testing k8s
-                    k8s.changeContext("${env.CONTEXTFORTESTING}")
+                    k8sfunctions.changeContext("${env.CONTEXTFORTESTING}")
                     // this function is used to deploy the helm chart to the testing enviroment and give it a name
-                    k8s.deployToK8s("${env.CHARTPACKAGENAME}","${env.FLASKFOLDER}","${env.ENVIROMENTFORTESTING}","${env.DEPLOYMENTNAMEFORTESTING}")
+                    k8sfunctions.deployToK8s("${env.CHARTPACKAGENAME}","${env.FLASKFOLDER}","${env.ENVIROMENTFORTESTING}","${env.DEPLOYMENTNAMEFORTESTING}")
                     // this function is used to pull the tcp port of the test service
-                    k8s.pullTcp("${env.SERVICENAMEFORTESTING}")
+                    k8sfunctions.pullTcp("${env.SERVICENAMEFORTESTING}")
                 }
             }
         }
@@ -241,7 +241,7 @@ pipeline
                 script
                 {
                     // this function is used to rollout the deployment of flask and mysql
-                    k8s.rolloutK8S("${env.K8SFLASKDEPLOYMENT}","${env.K8SMYSQLDEPLOYMENT}")
+                    k8sfunctions.rolloutK8S("${env.K8SFLASKDEPLOYMENT}","${env.K8SMYSQLDEPLOYMENT}")
                 }
             }
         }
@@ -260,7 +260,7 @@ pipeline
                 script
                 {
                     // this function is used to test the application if it is working
-                    k8s.testingTestEnv("${env.WINDOWSIP}","${env.KUBECTLTCPPORT}")
+                    k8sfunctions.testingTestEnv("${env.WINDOWSIP}","${env.KUBECTLTCPPORT}")
                 }
             }
         }
@@ -279,7 +279,7 @@ pipeline
                 script
                 {
                     //this function is used to close the helm chart on the testing enviroment
-                    helm.closingHelm("${env.DEPLOYMENTNAMEFORTESTING}")
+                    helmfunctions.closingHelm("${env.DEPLOYMENTNAMEFORTESTING}")
                 }
             }
         }
@@ -299,11 +299,11 @@ pipeline
                 script
                 {
                     //this function is used to change the context to production
-                    k8s.changeContext("${env.CONTEXTFORPRODUCTION}")          
+                    k8sfunctions.changeContext("${env.CONTEXTFORPRODUCTION}")          
                     //this function is used to deploy the helm chart to the production enviroment and give it a name
-                    k8s.deployToK8s("${env.CHARTPACKAGENAME}","${env.FLASKFOLDER}","${env.ENVIROMENTFORPRODUCTION}","${env.DEPLOYMENTNAMEFORPRODUCTION}")
+                    k8sfunctions.deployToK8s("${env.CHARTPACKAGENAME}","${env.FLASKFOLDER}","${env.ENVIROMENTFORPRODUCTION}","${env.DEPLOYMENTNAMEFORPRODUCTION}")
                     //this function is used to pull the tcp port of the service
-                    k8s.pullTcp("${env.SERVICENAMEFORPRODUCTION}")
+                    k8sfunctions.pullTcp("${env.SERVICENAMEFORPRODUCTION}")
                 }
             }
         }
@@ -322,7 +322,7 @@ pipeline
                 //this function is used to rollout the deployment
                 script
                 {
-                    k8s.rolloutK8S("${env.K8SFLASKDEPLOYMENT}","${env.K8SMYSQLDEPLOYMENT}")
+                    k8sfunctions.rolloutK8S("${env.K8SFLASKDEPLOYMENT}","${env.K8SMYSQLDEPLOYMENT}")
                 }
             }
         }
@@ -341,7 +341,7 @@ pipeline
                 script
                 {
                     // this function is used to close the proxy using the windows ip on the windows machine
-                    k8s.closingProxy("${env.WINDOWSIP}")
+                    k8sfunctions.closingProxy("${env.WINDOWSIP}")
                 }
             }
         } 
