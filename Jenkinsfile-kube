@@ -142,7 +142,7 @@ pipeline
                 script 
                 {
                     // this function is used to prepare the GKE cluster by creating it and installing the kubectl by using terraform
-                    terraformfunctions.terraformApply("${env.TERRAFORMFILESFOLDER}", "${env.GCPCLUSTERNAM}", "${env.GCPZONE}", "${env.GCPPROJECTID}")
+                    terraformfunctions.terraformApply("${env.TERRAFORMFILESFOLDER}", "${env.GCPCLUSTERNAME}", "${env.GCPZONE}", "${env.GCPPROJECTID}")
                 }
             }
         }
