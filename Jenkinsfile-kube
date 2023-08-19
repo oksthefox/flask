@@ -78,7 +78,7 @@ pipeline
                 script 
                 {
                     // Check for changes in the Jenkinsfile-kube file if only changes to the Jenkinsfile-kube file, skip the pipeline
-                    pipelinefunctions.changeCheck()
+                    pipelinefunctions.changeCheck("${env.JENKINSFILE}}")
                 }
             }
         }
@@ -122,7 +122,7 @@ pipeline
                     // this function is used to clone the repo from github to the workspace
                     gitfunctions.GitClone("${env.GITURL}")
                     // this function is used to test if there are changes inn the helm chart and if there are it will send it to bucket and change the version on the chart
-                    helm.packageHelmChart("${env.FLASKFOLDER}","${env.BUCKETNAME}","${env.BUCKETFOLDER}")
+                    helmfunctions.packageHelmChart("${env.FLASKFOLDER}","${env.BUCKETNAME}","${env.BUCKETFOLDER}")
                 }
                 sh 'ls'
             }
