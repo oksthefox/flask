@@ -94,7 +94,8 @@ nav ul li a:hover::after
     color: #ff004f;
 }
 
-.header-image {
+.header-image 
+{
     position: absolute;
     bottom: 0;
     right: 0;
