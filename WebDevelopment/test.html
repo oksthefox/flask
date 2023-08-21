@@ -5,7 +5,7 @@
     <mata http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Portfolio Website</title>
-    <link rel="stylesheet" type="text/css" href="test.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static' , filename='CSS/test.css') }}">
     <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -26,11 +26,9 @@
                 <h1>Hey, I'm<span><br>Oksana Shevchenko</span></h1>
                 <p>DevOps Specialist</p>
                 <div class="home_img">
-                    <img src="img4.png" alt="Oksana Shevchenko" class="header-image">
+                    <img src="{{ url_for('static' , filename='images/img4.png') }}" alt="Oksana Shevchenko" class="header-image">
                 </div>
             </div>
-            
-            
         </div>
     </div>
     <!----------------about me---------------->
@@ -38,7 +36,7 @@
         <div class="container">
             <div class="row">
                 <div class="about-col-1">
-                    <img src="img1.png" alt="">
+                    <img src="{{ url_for('static' , filename='images/img1.png') }}" alt="">
                 </div>
                 <div class="about-col-2">
                     <h1 class="sub-title">About Me</h1>
@@ -50,12 +48,11 @@
                     </div>
                     <div class="tab-contents active-tab" id="Skills">
                         <ul>
-                            <li><span>Programming Language</span><br>Python, Java, Groovy, YAML/YML</li>
-                            <li><span>Scripting Language</span><br>Bash, PowerShell</li>
+                            <li><span>Programming Language</span><br>Python, Groovy, YAML/YML</li>
+                            <li><span>Scripting Language</span><br>Bash</li>
                             <li><span>Web Development</span><br>HTML, CSS, JavaScript, Flask</li>
-                            <li><span>Dev-Ops</span><br>Linux, Docker, Kubernetes, Jenkins, Ansible, Terraform, AWS, GCP</li>
+                            <li><span>Dev-Ops</span><br>Linux, Docker, Prometheus, Grafana, Kubernetes, Jenkins, Ansible, Terraform, AWS, GCP, Git</li>
                             <li><span>AI</span><br>Use of AI Technologies</li>
-                            <li><span>Monitoring</span><br>Prometheus</li>
                         </ul>
                     </div>
                     <div class="tab-contents" id="Experience">
@@ -80,30 +77,56 @@
         <div class="container">
             <h1 class="sub-title">My Services</h1>
             <div class="services-list">
-                <div>
+                <div class="service-card">
                     <i class="fa-solid fa-code"></i>
-                    <h2>Web Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet or 
-                    an intranet.</p>
-                    <a href="#">Read More</a>
+                    <h2>Programming Language</h2>
+                    <p>Programming languages are essential tools used to craft software, applications, and websites.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>From Python's versatility to Groovy's dynamic scripting and YAML/YML's data representation, these languages empower developers to create diverse digital solutions.</p>
+                    </div>
                 </div>
-                <div>
-                    <i class="fa-solid fa-crop"></i>
-                    <h2>UI/UX Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet 
-                    or an intranet.</p>
-                    <a href="#">Read More</a>
+                <div class="service-card">
+                    <i class="fa-brands fa-linux"></i>
+                    <h2>Scripting Language</h2>
+                    <p>Harnessing the power of scripting languages is essential for automating tasks and system management.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p> With expertise in languages like Bash for Unix/Linux and PowerShell for Windows, I ensure these processes are not only efficient but elegantly executed.</p>
+                    </div>
                 </div>
-                <div>
+                <div class="service-card">
                     <i class="fa-brands fa-app-store-ios"></i>
-                    <h2>App Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet
-                    or an intranet.</p>
-                    <a href="#">Read More</a>
+                    <h2>Web Design</h2>
+                    <p>Web development is the work involved in developing a Web site for the Internet or an intranet.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        I've successfully utilized HTML, CSS, JavaScript, and Flask to create dynamic and engaging web solutions that cater to various needs and audiences.</p>
+                    </div>
                 </div>
+                <div class="service-card">
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <h2>Dev-Ops</h2>
+                    <p>DevOps involves the integration of development and IT operations to enhance the software development lifecycle.</p>
+
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>I achived knowlege over powerful tools, including Linux, Prometheus, Grafana, Docker, Kubernetes, Jenkins, Ansible, Terraform, AWS, GCP, and Git. These tools collectively enable streamlined workflows, efficient deployment, and seamless management of complex software projects.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <h2>Artificial Intelligence</h2>
+                    <p>Artificial Intelligence involves advanced problem-solving by machines.</p>
+
+
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>With the assistance of tools like ChatGPT and BARD, I've accelerated my learning process, improved productivity, and achieved success more efficiently.</p>
+
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -113,7 +136,7 @@
             <h1 class="sub-title">My Work</h1>
             <div class="work-list">
                 <div class="work">
-                    <img src="img5.jpeg">
+                    <img src="{{ url_for('static' , filename='images/img5.jpeg') }}">
                     <div class="layer">
                         <h3>Social Media App</h3>
                         <p>The app connects you with talented people around the world</p>
@@ -121,7 +144,7 @@
                     </div>
                 </div>
                 <div class="work">
-                    <img src="img6.jpeg">
+                    <img src="{{ url_for('static' , filename='images/img6.jpeg') }}">
                     <div class="layer">
                         <h3>Music App</h3>
                         <p>The app connects you with talented people around the world</p>
@@ -129,7 +152,7 @@
                     </div>
                 </div>
                 <div class="work">
-                    <img src="img7.jpeg">
+                    <img src="{{ url_for('static' , filename='images/img7.jpeg') }}">
                     <div class="layer">
                         <h3>Online Shopping App</h3>
                         <p>The app connects you with talented people around the world</p>
@@ -175,8 +198,36 @@
     </div>
 
 
- <!---->>
-<script>
+ <!--scrips-->
+ <script>
+    const serviceCards = document.querySelectorAll('.service-card');
+
+    serviceCards.forEach(card => {
+        const readMoreLink = card.querySelector('.read-more-link');
+        const additionalContent = card.querySelector('.additional-content');
+
+        readMoreLink.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            if (card.classList.contains('show')) {
+                card.classList.remove('show');
+                readMoreLink.textContent = 'Read More';
+            } else {
+                serviceCards.forEach(otherCard => {
+                    otherCard.classList.remove('show');
+                    const otherReadMoreLink = otherCard.querySelector('.read-more-link');
+                    otherReadMoreLink.textContent = 'Read More';
+                });
+
+                card.classList.add('show');
+                readMoreLink.textContent = 'Read Less';
+            }
+        });
+    });
+ </script>
+
+
+ <script>
 
     var tabLinks = document.getElementsByClassName("tab-links");
     var tabContents = document.getElementsByClassName("tab-contents");
@@ -194,10 +245,10 @@
         document.getElementById(tabname).classList.add("active-tab");
     }
 
-</script>
+ </script>
 
 
-<script>
+ <script>
     var sidemenu = document.getElementById("sidemenu");
 
     function openmenu()
@@ -208,11 +259,11 @@
     {
         sidemenu.style.right = "-200px";
     }
-</script>
+ </script>
 
 
 
-<script>
+ <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbynev16LkAWon1y6m2PO8-B3YBzcChUKmS3pdJGPHKPlpn531WyIkNmiT82ytgWJhHA/exec'
     const form = document.forms['submit-to-google-sheet']
     const msg = document.getElementById('msg')
@@ -228,6 +279,6 @@
         })
         .catch(error => console.error('Error!', error.message))
     })
-</script>
+ </script>
 </body>
 </html>

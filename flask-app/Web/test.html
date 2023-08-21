@@ -12,17 +12,22 @@
     <div id="header">
         <div class="container">
             <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About Me</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Portfolio</a></li>
-                    <li><a href="#">Contact Me</a></li>
+                <ul id="sidemenu">
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#About">About Me</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#Portfolio">Portfolio</a></li>
+                    <li><a href="#contact">Contact Me</a></li>
+                    <i class="fas fa-times" onclick="closemenu()"></i>
                 </ul>
+                <i class="fas fa-bars" onclick="openmenu()"></i>
             </nav>
             <div class="header-text">
                 <h1>Hey, I'm<span><br>Oksana Shevchenko</span></h1>
                 <p>DevOps Specialist</p>
+                <div class="home_img">
+                    <img src="{{ url_for('static' , filename='images/img4.png') }}" alt="Oksana Shevchenko" class="header-image">
+                </div>
             </div>
         </div>
     </div>
@@ -35,7 +40,7 @@
                 </div>
                 <div class="about-col-2">
                     <h1 class="sub-title">About Me</h1>
-                    <p>My name is Oksana Shevchenko. I am a DevOps Engineer. I have a Bachelor's degree in Computer Science. I am a hardworking, motivated individual with a passion for learning and developing new skills. I am a fast learner and a team player. I am looking for a position where I can apply my knowledge and skills to contribute to the organization's success.</p>
+                    <p>Formerly part of the IDF's ICT and Cyber Division, my journey unveiled a deep fascination for advanced technologies like programming and AI, including the innovative ChatGPT app. I embody stability, determination, and a relentless drive to learn. Through military service, I tapped into the boundless potential of the tech world, sparking a fervent passion within me. <br> Now, immersed in a DevOps course, I'm eager to infuse my expertise into challenging tech roles, fueling my ambition to advance and excel.</p>
                     <div class="tab-titles">
                         <p class="tab-links active-link" onclick="opentab('Skills')">Skills</p>
                         <p class="tab-links" onclick="opentab('Experience')">Experience</p>
@@ -43,23 +48,24 @@
                     </div>
                     <div class="tab-contents active-tab" id="Skills">
                         <ul>
-                            <li><span>UI/UX</span><br>Dessigning and developing</li>
-                            <li><span>Web Development</span><br>Web app Development</li>
-                            <li><span>App Development</span><br>Building Android/ios apps</li>
+                            <li><span>Programming Language</span><br>Python, Groovy, YAML/YML</li>
+                            <li><span>Scripting Language</span><br>Bash</li>
+                            <li><span>Web Development</span><br>HTML, CSS, JavaScript, Flask</li>
+                            <li><span>Dev-Ops</span><br>Linux, Docker, Prometheus, Grafana, Kubernetes, Jenkins, Ansible, Terraform, AWS, GCP, Git</li>
+                            <li><span>AI</span><br>Use of AI Technologies</li>
                         </ul>
                     </div>
                     <div class="tab-contents" id="Experience">
                         <ul>
-                            <li><span>2021 - Current</span><br>UI/UX Design Training at ET Institute</li>
-                            <li><span>2019 - 2021</span><br>Team lead at StarApp LLC.</li>
-                            <li><span>App Development</span><br>Building Android/ios apps</li>
+                            <li><span>2023 - Current</span><br>Dev-Ops Specialist at A Billion Dollar Company</li>
+                            <li><span>2020 - 2023</span><br>System & Network Specialist at The IDF</li>
                         </ul>
                     </div>
                     <div class="tab-contents" id="Education">
                         <ul>
-                            <li><span>UI/UX</span><br>Dessigning and developing</li>
-                            <li><span>Web Development</span><br>Web app Development</li>
-                            <li><span>App Development</span><br>Building Android/ios apps</li>
+                            <li><span>2023 - Current</span><br>Course: Dev-Ops Specialist Student at Sela College</li>
+                            <li><span>2020 - 2020</span><br>Course: System & Network Administrator at IDF</li>
+                            <li><span>2008 - 2020</span><br>Matriculation Certificate - 12 Years Of Schooling</li>
                         </ul>
                     </div>
                 </div>
@@ -71,30 +77,56 @@
         <div class="container">
             <h1 class="sub-title">My Services</h1>
             <div class="services-list">
-                <div>
+                <div class="service-card">
                     <i class="fa-solid fa-code"></i>
-                    <h2>Web Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet or 
-                    an intranet.</p>
-                    <a href="#">Read More</a>
+                    <h2>Programming Language</h2>
+                    <p>Programming languages are essential tools used to craft software, applications, and websites.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>From Python's versatility to Groovy's dynamic scripting and YAML/YML's data representation, these languages empower developers to create diverse digital solutions.</p>
+                    </div>
                 </div>
-                <div>
-                    <i class="fa-solid fa-crop"></i>
-                    <h2>UI/UX Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet 
-                    or an intranet.</p>
-                    <a href="#">Read More</a>
+                <div class="service-card">
+                    <i class="fa-brands fa-linux"></i>
+                    <h2>Scripting Language</h2>
+                    <p>Harnessing the power of scripting languages is essential for automating tasks and system management.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p> With expertise in languages like Bash for Unix/Linux and PowerShell for Windows, I ensure these processes are not only efficient but elegantly executed.</p>
+                    </div>
                 </div>
-                <div>
+                <div class="service-card">
                     <i class="fa-brands fa-app-store-ios"></i>
-                    <h2>App Design</h2>
-                    <p>Web development is the work involved in
-                    developing a Web site for the Internet
-                    or an intranet.</p>
-                    <a href="#">Read More</a>
+                    <h2>Web Design</h2>
+                    <p>Web development is the work involved in developing a Web site for the Internet or an intranet.</p>
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        I've successfully utilized HTML, CSS, JavaScript, and Flask to create dynamic and engaging web solutions that cater to various needs and audiences.</p>
+                    </div>
                 </div>
+                <div class="service-card">
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <h2>Dev-Ops</h2>
+                    <p>DevOps involves the integration of development and IT operations to enhance the software development lifecycle.</p>
+
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>I achived knowlege over powerful tools, including Linux, Prometheus, Grafana, Docker, Kubernetes, Jenkins, Ansible, Terraform, AWS, GCP, and Git. These tools collectively enable streamlined workflows, efficient deployment, and seamless management of complex software projects.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <h2>Artificial Intelligence</h2>
+                    <p>Artificial Intelligence involves advanced problem-solving by machines.</p>
+
+
+                    <a href="#" class="read-more-link">Read More</a>
+                    <div class="additional-content">
+                        <p>With the assistance of tools like ChatGPT and BARD, I've accelerated my learning process, improved productivity, and achieved success more efficiently.</p>
+
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -107,7 +139,7 @@
                     <img src="{{ url_for('static' , filename='images/img5.jpeg') }}">
                     <div class="layer">
                         <h3>Social Media App</h3>
-                        <p>The app connects you wiyh talented people around the world</p>
+                        <p>The app connects you with talented people around the world</p>
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                     </div>
                 </div>
@@ -115,7 +147,7 @@
                     <img src="{{ url_for('static' , filename='images/img6.jpeg') }}">
                     <div class="layer">
                         <h3>Music App</h3>
-                        <p>The app connects you wiyh talented people around the world</p>
+                        <p>The app connects you with talented people around the world</p>
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                     </div>
                 </div>
@@ -123,7 +155,7 @@
                     <img src="{{ url_for('static' , filename='images/img7.jpeg') }}">
                     <div class="layer">
                         <h3>Online Shopping App</h3>
-                        <p>The app connects you wiyh talented people around the world</p>
+                        <p>The app connects you with talented people around the world</p>
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                     </div>
                 </div>
@@ -137,8 +169,8 @@
             <div class="row">
                <div class="contact-left">
                      <h1 class="sub-title">Contact Me</h1>
-                     <p><i class="fa-solid fa-paper-plane"></i>contact@example.com</p>
-                     <p><i class="fa-solid fa-mobile"></i>1234567890</p>
+                     <p><i class="fa-solid fa-paper-plane"></i>sh2oxana@gmail.com</p>
+                     <p><i class="fa-solid fa-mobile"></i>0526409608</p>
                      <div class="social-icons">
                         <a href="https://facebook.com/"><i class="fa-brands fa-linkedin"></i></a>
                         <a href=""><i class="fa-brands fa-square-twitter"></i></a>
@@ -150,12 +182,13 @@
                      </form>
                </div> 
                <div class="contact-right">
-                    <form>
+                    <form name="submit-to-google-sheet">
                         <input type="text" name="Name" placeholder="Your Name" required>
-                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="email" name="Email" placeholder="Your Email" required>
                         <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
                         <button type="submit" class="btn btn2">Submit</button>
                     </form>
+                    <span id="msg"></span>
                </div> 
             </div>
         </div>
@@ -164,7 +197,37 @@
         </div>
     </div>
 
-<script>
+
+ <!--scrips-->
+ <script>
+    const serviceCards = document.querySelectorAll('.service-card');
+
+    serviceCards.forEach(card => {
+        const readMoreLink = card.querySelector('.read-more-link');
+        const additionalContent = card.querySelector('.additional-content');
+
+        readMoreLink.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            if (card.classList.contains('show')) {
+                card.classList.remove('show');
+                readMoreLink.textContent = 'Read More';
+            } else {
+                serviceCards.forEach(otherCard => {
+                    otherCard.classList.remove('show');
+                    const otherReadMoreLink = otherCard.querySelector('.read-more-link');
+                    otherReadMoreLink.textContent = 'Read More';
+                });
+
+                card.classList.add('show');
+                readMoreLink.textContent = 'Read Less';
+            }
+        });
+    });
+ </script>
+
+
+ <script>
 
     var tabLinks = document.getElementsByClassName("tab-links");
     var tabContents = document.getElementsByClassName("tab-contents");
@@ -180,9 +243,42 @@
         }
         event.currentTarget.classList.add("active-link");
         document.getElementById(tabname).classList.add("active-tab");
-        
     }
 
-</script>
+ </script>
+
+
+ <script>
+    var sidemenu = document.getElementById("sidemenu");
+
+    function openmenu()
+    {
+        sidemenu.style.right = "0";
+    }
+    function closemenu()
+    {
+        sidemenu.style.right = "-200px";
+    }
+ </script>
+
+
+
+ <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynev16LkAWon1y6m2PO8-B3YBzcChUKmS3pdJGPHKPlpn531WyIkNmiT82ytgWJhHA/exec'
+    const form = document.forms['submit-to-google-sheet']
+    const msg = document.getElementById('msg')
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(response => {
+            msg.innerHTML = "Message sent successfully"
+            setTimeout(function(){
+                msg.innerHTML = "" 
+            }, 5000)
+            form.reset()
+        })
+        .catch(error => console.error('Error!', error.message))
+    })
+ </script>
 </body>
 </html>
