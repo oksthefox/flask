@@ -35,7 +35,7 @@ def test():
     if request.method == "POST":
         if 'formDownload' in request.form:
             CV_downloads.inc()
-            return send_from_directory('Static/images', 'Resume.jpg', as_attachment=True)
+            return send_from_directory('Static/images', 'Resume.pdf', as_attachment=True)
     return render_template("test.html")
 
 
