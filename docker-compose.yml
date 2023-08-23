@@ -2,7 +2,6 @@ version: '3'
 
 services:
   web:
-    build: ./flask-app
     image: oksthefox/dockerflask
     ports:
       - "5000:5000"
@@ -15,7 +14,6 @@ services:
       - MYSQL_DATABASE=flask_db
     restart: always
   db:
-    build: ./mysql
     image: oksthefox/dockerdb
     environment:
       - MYSQL_ROOT_PASSWORD=password
