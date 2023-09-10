@@ -56,6 +56,7 @@ pipeline
                     dockerfunctions.dockerLogin()    
                 }
             }
+
         }
         
         // this stage is used to start the proxy
@@ -104,7 +105,7 @@ pipeline
                 }
             }
         }
-        // this stage is used to clone the repo from github to the workspace and test if there are changes inn the helm chart and if there are it will send it to bucket and change the version on the chart
+        // this stage is used to clone the repo from github to the workspace and test if there are changes in the helm chart and if there are it will send it to bucket and change the version on the chart
         stage('Build') 
         {
 
@@ -302,8 +303,6 @@ pipeline
                     k8sfunctions.changeContext("${env.CONTEXTFORPRODUCTION}")          
                     //this function is used to deploy the helm chart to the production enviroment and give it a name
                     k8sfunctions.deployToK8s("${env.CHARTPACKAGENAME}","${env.FLASKFOLDER}","${env.ENVIROMENTFORPRODUCTION}","${env.DEPLOYMENTNAMEFORPRODUCTION}")
-                    //this function is used to pull the tcp port of the service
-                    k8sfunctions.pullTcp("${env.SERVICENAMEFORPRODUCTION}")
                 }
             }
         }

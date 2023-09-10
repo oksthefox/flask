@@ -4,28 +4,33 @@ import mysql.connector
 import os
 import random
 import time
+import requests
+import socket
 from flask import Flask, render_template, send_from_directory
-from prometheus_client import Counter
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from flask import Flask, render_template, redirect, url_for, request, send_from_directory, Response
 
 
 app = Flask(__name__, template_folder='Web', static_folder='Static')
 
 CV_downloads = Counter('CV_downloads', 'Number of times CV has been downloaded')
 
-# Configure MySQL connection
-db = None
-while db is None:
-    try:
-        db = mysql.connector.connect(
-            host="db",
-            user="root",
-            password="password",
-            database="flask_db"
-        )
-    except mysql.connector.Error as err:
-        print("Failed connecting to database. Retrying...")
-        time.sleep(1)
+def establish_db_connection():
+    while True:
+        try:
+            db = mysql.connector.connect(
+                host="db",
+                user="root",
+                password="password",
+                database="flask_db"
+            )
+            return db
+        except mysql.connector.Error as err:
+            print("Failed connecting to database. Retrying...")
+            time.sleep(1)
+
+# Establish connection to database
+db = establish_db_connection()
 
 
 
@@ -39,13 +44,24 @@ def test():
     return render_template("test.html")
 
 
-@app.route("/gifs", methods=["GET", "POST"])
-def index():
-    cursor = db.cursor()
-    cursor.execute("SELECT url FROM images;")
-    images = [row[0] for row in cursor.fetchall()]
-    url = random.choice(images)
-    return render_template("index.html", url=url)
+@app.route("/gifs")
+def displaygifs():
+    global db  # ensure you're modifying the global db
+    for _ in range(3):  # Try 3 times
+        try:
+            if db.is_connected() == False: # check if connection is still open
+                db = establish_db_connection()
+            cursor = db.cursor()
+            cursor.execute("SELECT url FROM images;")
+            images = [row[0] for row in cursor.fetchall()]
+            url = random.choice(images)
+            return render_template("index.html", url=url)
+        except mysql.connector.Error as err:
+            # Handle the error and attempt to reconnect
+            print("Error accessing the database. Reconnecting...")
+            db = establish_db_connection()
+            continue
+    return "Error accessing the database. Please try again later."
 
 
 @app.route("/metrics")
