@@ -1,6 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10.12
 
+# Install 'requests' module
+RUN pip install requests
+
 # Set a directory for the app
 WORKDIR /usr/src/app
 
